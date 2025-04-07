@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCirclePlay, faPlay, faFilePdf, faDownload, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import ReactPlayer from 'react-player';
 import styles from "../style/video.module.css";
 
 const Video = () => {
@@ -19,6 +20,8 @@ const Video = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [downloadingFile, setDownloadingFile] = useState(null);
+  const [hasVideoError, setHasVideoError] = useState(false);
+  const [courseProgress, setCourseProgress] = useState({});
 
   // Constants
   const API_BASE_URL = "https://skillbridge.runasp.net";
@@ -28,6 +31,25 @@ const Video = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const courseId = searchParams.get("id");
+
+  // Calculate progress based on completed lectures
+  const calculateProgress = (sections) => {
+    let totalLectures = 0;
+    let completedLectures = 0;
+
+    sections.forEach(section => {
+      section.lectures?.forEach(lecture => {
+        totalLectures++;
+        if (lecture.completed) {
+          completedLectures++;
+        }
+      });
+    });
+
+    return totalLectures > 0
+      ? Math.min(Math.round((completedLectures / totalLectures) * 100), 100)
+      : 0;
+  };
 
   // Fetch course details and sections
   useEffect(() => {
@@ -44,20 +66,20 @@ const Video = () => {
           const courseData = await courseResponse.json();
           setCourse(courseData);
 
-          // Check if the user is authenticated
+          // Check authentication
           const token = localStorage.getItem("token");
           if (!token) {
             Swal.fire({
-              title: "خطأ في المصادقة",
-              text: "يجب تسجيل الدخول للوصول إلى محتوى الدورة",
+              title: "Authentication Error",
+              text: "You need to login to access course content",
               icon: "error",
-              confirmButtonText: "حسناً"
+              confirmButtonText: "OK"
             });
             setIsLoading(false);
             return;
           }
 
-          // Fetch sections for the course
+          // Fetch sections
           const sectionsResponse = await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -79,18 +101,27 @@ const Video = () => {
               pdfFiles: section.pdfFiles || [],
               quizzes: section.quizzes || []
             }));
+
             setSections(updatedSections);
-            setProgress(sectionsData.progress || 0);
+
+            // Calculate and set progress
+            const calculatedProgress = calculateProgress(updatedSections);
+            setProgress(calculatedProgress);
+            setCourseProgress(prev => ({
+              ...prev,
+              [courseId]: calculatedProgress
+            }));
           } else {
             setSections([]);
+            setProgress(0);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
           Swal.fire({
-            title: "خطأ في تحميل البيانات",
-            text: "فشل في تحميل تفاصيل الدورة. يرجى المحاولة لاحقاً.",
+            title: "Data Loading Error",
+            text: "Failed to load course details. Please try again later.",
             icon: "error",
-            confirmButtonText: "حسناً"
+            confirmButtonText: "OK"
           });
         } finally {
           setIsLoading(false);
@@ -100,17 +131,17 @@ const Video = () => {
       fetchCourseDetails();
     } else {
       Swal.fire({
-        title: "خطأ في المعرّف",
-        text: "معرف الدورة غير موجود أو غير صالح",
+        title: "ID Error",
+        text: "Course ID is missing or invalid",
         icon: "error",
-        confirmButtonText: "حسناً"
+        confirmButtonText: "OK"
       }).then(() => {
         router.push("/courses");
       });
     }
   }, [courseId, router]);
 
-  // Handle PDF download with enhanced error handling and authentication
+  // Handle PDF download
   const handlePdfDownload = (pdfFile) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -119,20 +150,41 @@ const Video = () => {
     }
 
     const pdfUrl = `${API_BASE_URL}${UPLOADS_BASE_PATH}${pdfFile.filePath}`;
-
-    // إضافة التوكن في الرابط إذا كان السيرفر يدعمه كـ Query Parameter (لو السيرفر لا يدعم Header في ملفات ثابتة)
     const fullUrl = `${pdfUrl}?token=${token}`;
-
-    // فتح الملف مباشرة في تبويب جديد
     window.open(fullUrl, '_blank');
   };
 
-
-  // Handle video selection and mark lecture as done
+  // Handle video selection
   const handleVideoSelect = async (lectureId, videoUrl) => {
-    setSelectedVideoUrl(videoUrl);
-    setShowQuiz(false);
-    await markLectureAsDone(lectureId);
+    try {
+      setHasVideoError(false);
+      let validUrl = videoUrl;
+
+      if (!videoUrl.startsWith('http')) {
+        validUrl = `https://${videoUrl}`;
+      }
+
+      try {
+        const testResponse = await fetch(validUrl, { method: 'HEAD' });
+        if (!testResponse.ok) {
+          throw new Error('Video URL not accessible');
+        }
+      } catch (testError) {
+        console.warn('HEAD request failed, trying to proceed anyway:', testError);
+      }
+
+      setSelectedVideoUrl(validUrl);
+      setShowQuiz(false);
+      await markLectureAsDone(lectureId);
+    } catch (error) {
+      console.error('Video playback error:', error);
+      setHasVideoError(true);
+      Swal.fire({
+        title: "Video Playback Error",
+        text: "Failed to load video. Please check the URL or try again later.",
+        icon: "error"
+      });
+    }
   };
 
   // Mark lecture as done
@@ -144,7 +196,7 @@ const Video = () => {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/Lectures/${lectureId}/markDone`, {
+      await fetch(`${API_BASE_URL}/api/Lectures/${lectureId}/markDone`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -152,28 +204,28 @@ const Video = () => {
         },
       });
 
-      
-
       const updatedSections = sections.map((section) => ({
         ...section,
         lectures: section.lectures.map((lecture) =>
           lecture.id === lectureId ? { ...lecture, completed: true } : lecture
         ),
       }));
+
       setSections(updatedSections);
 
-      const sectionsResponse = await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
+      const newProgress = calculateProgress(updatedSections);
+      setProgress(newProgress);
+      setCourseProgress(prev => ({
+        ...prev,
+        [courseId]: newProgress
+      }));
+
+      // Sync with server
+      await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!sectionsResponse.ok) {
-        throw new Error("Failed to fetch updated sections");
-      }
-
-      const sectionsData = await sectionsResponse.json();
-      setProgress(sectionsData.progress);
     } catch (error) {
       console.error("Error marking lecture as done:", error);
     }
@@ -185,6 +237,7 @@ const Video = () => {
     setShowQuiz(true);
     setUserAnswers({});
     setShowResults(false);
+    setSelectedVideoUrl("");
   };
 
   // Handle answer selection
@@ -215,7 +268,7 @@ const Video = () => {
     setShowResults(true);
   };
 
-  // Redirect to login page
+  // Redirect to login
   const handleLogin = () => {
     router.push("/login");
   };
@@ -235,7 +288,7 @@ const Video = () => {
     return <div className={styles.errorContainer}>Course not found.</div>;
   }
 
-  // Check if the user is authenticated
+  // Check authentication
   const token = localStorage.getItem("token");
 
   return (
@@ -254,7 +307,10 @@ const Video = () => {
               <div className={styles.header}>
                 <h2>Overall Progress: {progress}%</h2>
                 <div className={styles.progressContainer}>
-                  <div className={styles.progressBar} style={{ width: `${progress}%` }}></div>
+                  <div
+                    className={styles.progressBar}
+                    style={{ width: `${Math.min(progress, 100)}%` }}
+                  ></div>
                 </div>
               </div>
               {sections.length === 0 ? (
@@ -282,7 +338,6 @@ const Video = () => {
                       </ul>
                     </div>
 
-                    {/* PDF Files Section */}
                     {section.pdfFiles && section.pdfFiles.length > 0 && (
                       <div className={styles.pdfFiles}>
                         <h4>PDF Materials:</h4>
@@ -298,14 +353,12 @@ const Video = () => {
                                 <FontAwesomeIcon icon={faFilePdf} />
                               </span>
                               <span className={styles.fileName}>{pdf.fileName}</span>
-                              
                             </li>
                           ))}
                         </ul>
                       </div>
                     )}
 
-                    {/* Quizzes Section */}
                     {section.quizzes && section.quizzes.length > 0 && (
                       <div className={styles.quizzes}>
                         <h4>Quizzes:</h4>
@@ -370,17 +423,31 @@ const Video = () => {
                     Submit Answers
                   </button>
                 </div>
-              ) : selectedVideoUrl ? (
-                <iframe
-                  className={styles.iframe}
-                  width="100%"
-                  height="500"
-                  src={selectedVideoUrl}
-                  title="Course Video"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
+              ) : selectedVideoUrl && !hasVideoError ? (
+                <div className={styles.videoWrapper}>
+                  <ReactPlayer
+                    url={selectedVideoUrl}
+                    width="100%"
+                    height="500px"
+                    controls={true}
+                    onError={(e) => {
+                      console.error("Error playing video:", e);
+                      setHasVideoError(true);
+                      Swal.fire({
+                        title: "Video Playback Error",
+                        text: "Failed to load video. Please check the URL or try again later.",
+                        icon: "error"
+                      });
+                    }}
+                    config={{
+                      file: {
+                        attributes: {
+                          controlsList: 'nodownload'
+                        }
+                      }
+                    }}
+                  />
+                </div>
               ) : (
                 <div className={styles.videoPlaceholder}>
                   <img src="/images.jpg" alt="Learning Course" />
