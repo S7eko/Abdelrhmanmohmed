@@ -1,0 +1,77 @@
+/* Main Container */
+.main_number {
+  width: 100%;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  /* Light background for contrast */
+  text-align: center;
+}
+
+/* Number Container */
+.number {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  /* Ensures responsiveness */
+}
+
+/* Individual Number Card */
+.number1,
+.number2,
+.number3 {
+  flex: 1;
+  min-width: 200px;
+  /* Ensures cards don't shrink too small */
+  padding: 20px;
+  color: #000;
+  border-radius: 15px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover Effect */
+.number1:hover,
+.number2:hover,
+.number3:hover {
+  transform: translateY(-10px);
+  /* Lift effect */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Number Heading */
+.number1 h2,
+.number2 h2,
+.number3 h2 {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #000;
+  /* Highlighted color for the numbers */
+}
+
+/* Number Description */
+.number1 p,
+.number2 p,
+.number3 p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+  .number {
+    flex-direction: column;
+    gap: 20px;
+    /* Adjust spacing between cards */
+  }
+
+  .number1,
+  .number2,
+  .number3 {
+    width: 100%;
+  }
+}

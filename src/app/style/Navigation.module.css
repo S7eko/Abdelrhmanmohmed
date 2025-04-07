@@ -1,0 +1,335 @@
+/* الـ Styles العامة للـ Navbar */
+.nav_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 80px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #1C1E53;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+.nav_left {
+  padding-left: 20px;
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav_left h2 a {
+  color: #FCD980; /* لون النص الذهبي */
+  text-decoration: none;
+}
+
+.nav_right {
+  display: flex;
+  align-items: center;
+  padding-right: 20px;
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* القائمة الرئيسية */
+.nav_right_List {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+
+/* العناصر داخل القائمة */
+.nav_right_List ul {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+}
+
+/* تأثير hover على الروابط داخل القائمة */
+.nav_right_List li a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav_right_List li a:hover {
+  color: #FCD980; /* لون النص الذهبي عند التمرير */
+  transform: scale(1.1);
+}
+
+/* تنسيق زر "Login" */
+.nav_right_login_button {
+  padding: 10px 20px;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #1C1E53;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* تأثير hover على زر "Login" */
+.nav_right_login_button:hover {
+  background-color: #fff;
+  color: #1C1E53;
+  border: 1px solid #1C1E53;
+}
+
+/* زر الهامبورجر */
+.hamburger {
+  display: none;
+  font-size: 30px;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  transition: transform 0.3s ease;
+}
+
+.hamburger:hover {
+  transform: rotate(90deg);
+}
+
+/* عند تصغير الشاشة، يتم إخفاء القائمة الافتراضية */
+.nav_right_List.active {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: absolute;
+  top: 80px;
+  left: 0;
+  background-color: #1c1e53;
+  width: 100%;
+  padding: 10px;
+  animation: slideIn 0.3s ease;
+}
+
+/* تأثير الحركة للقائمة المنسدلة */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* تنسيق الـ User Profile */
+/* تنسيق الـ User Profile */
+/* تنسيق الـ User Profile */
+.userProfile {
+  display: flex;
+  cursor: pointer;
+  position: relative;
+  align-items: center;
+  color: #000;
+}
+
+.userImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 30px;
+  margin-right: 10px;
+}
+
+.userName {
+  font-size: 14px;
+  color: #fff;
+}
+
+/* تنسيق الـ Dropdown */
+.dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 250px;
+  z-index: 1000;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.profileHeader .icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.profileHeader h4 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  text-align: start; /* محاذاة النص لليسار */
+}
+
+.profileHeader p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #666;
+  text-align: start; /* محاذاة النص لليسار */
+}
+
+.menuItems {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+}
+
+.menuItems li {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center; /* توسيط العناصر عموديًا */
+  font-size: 16px; /* زيادة حجم الخط */
+  text-align: start; /* محاذاة النص لليسار */
+}
+
+.menuItems li a {
+  text-decoration: none;
+  color: #333;
+  flex: 1;
+  display: flex;
+  align-items: center; /* توسيط النص مع الأيقونة */
+  text-align: start; /* محاذاة النص لليسار */
+}
+
+.menuItems li:hover {
+  background-color: #f8f9fa;
+}
+
+.menuIcon {
+  margin-right: 10px;
+  width: 20px;
+  color: #000;
+}
+
+.menuIcon span {
+  color: #000;
+}
+/* تصميم للشاشات الصغيرة */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .nav_right_List {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: #1C1E53;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .nav_right_List.active {
+    display: block;
+  }
+
+  .nav_right_List ul {
+    flex-direction: column;
+  }
+
+  .nav_right_List ul li {
+    margin: 10px 0;
+  }
+
+  .dropdown {
+    top: 60px;
+    right: 20px;
+  }
+}
+.notificationsContainer {
+  position: relative;
+  cursor: pointer;
+}
+
+.notificationIcon {
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.notificationsDropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.notificationItem {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
+}
+
+.notificationItem p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.notificationItem small {
+  color: #888;
+  font-size: 12px;
+}
+.markAllAsReadButton{
+  background-color: #1C1E53;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 20px 0;
+}

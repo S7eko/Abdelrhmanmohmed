@@ -1,0 +1,274 @@
+/* page.module.css */
+
+/* الحاوية الرئيسية */
+.container_discration {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  padding: 30px;
+  max-width: 1200px;
+  margin: 150px auto;
+  border-radius: 12px;
+}
+
+/* الجزء الخاص بالمحتوى */
+.discration {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.discration h1 {
+  font-size: 2.8rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: start;
+  font-weight: bold;
+}
+
+.discration p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 30px;
+  text-align: start;
+  line-height: 1.6;
+}
+
+.discration_Images {
+  margin: 20px auto;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 100%;
+  position: relative;
+  /* هذا ضروري لوضع الأيقونة فوق الصورة */
+}
+
+.discration_Images .icon {
+  position: absolute;
+  /* لتثبيت الأيقونة فوق الصورة */
+  top: 50%;
+  /* لتوسيط الأيقونة عموديًا */
+  left: 50%;
+  /* لتوسيط الأيقونة أفقيًا */
+  transform: translate(-50%, -50%);
+  /* لضبط الأيقونة في منتصف العنصر */
+  font-size: 3rem;
+  color: #000;
+  /* حجم الأيقونة */
+  /* لون الأيقونة */
+  cursor: pointer;
+  /* لجعلها قابلة للنقر */
+  transition: color 0.3s ease;
+  /* لإضافة تأثير عند التحويم */
+}
+
+.discration_Images .icon:hover {
+    color: rgb(255, 93, 93);
+  /* تغيير اللون عند التحويم */
+}
+
+/* النصوص التوضيحية */
+.discration_text h2 {
+  font-size: 2rem;
+  color: #222;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.discration_text p {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 25px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.btn {
+  background-color: #fcd980;
+  color: #000;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+  background-color: #8f7f56;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* القسم الخاص بـ About */
+.about {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 600px;
+  gap: 20px;
+}
+
+.about h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.about p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.8;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+/* Media Queries */
+/* Media Queries */
+/* Media Queries */
+@media (max-width: 1024px) {
+  .container_discration {
+    padding: 20px;
+    gap: 30px;
+  }
+
+  .discration h1 {
+    font-size: 2.4rem;
+  }
+
+  .discration p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .discration_text h2 {
+    font-size: 1.8rem;
+  }
+
+  .btn {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+
+  .about {
+    max-width: 80%;
+  }
+
+  .about h2 {
+    font-size: 1.6rem;
+  }
+
+  .about p {
+    font-size: 1rem;
+    margin-left: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container_discration {
+    padding: 20px;
+    gap: 25px;
+  }
+
+  .discration h1 {
+    font-size: 2rem;
+  }
+
+  .discration_text h2 {
+    font-size: 1.6rem;
+  }
+
+  .discration p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .btn {
+    font-size: 0.95rem;
+    padding: 10px 20px;
+  }
+
+  .about {
+    max-width: 85%;
+  }
+
+  .about h2 {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .about p {
+    font-size: 0.95rem;
+    margin-left: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container_discration {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .discration {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .discration_Images {
+    margin: 0 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 100%;
+    position: relative;
+  }
+
+  .image {
+    padding: 0 20px;
+    width: 85%;
+    width: 450px;
+    height: auto;
+  }
+
+  .discration h1 {
+    font-size: 1.8rem;
+  }
+
+  .discration_text h2 {
+    font-size: 1.4rem;
+  }
+
+  .discration p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+  }
+
+  .about {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .about h2 {
+    font-size: 1.2rem;
+  }
+
+  .about p {
+    font-size: 0.85rem;
+    margin-left: 5px;
+  }
+}

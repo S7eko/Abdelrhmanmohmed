@@ -1,0 +1,304 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 100px;
+}
+.container h1 {
+  text-align: center;
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.noPosts {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.postHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.postHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.postDate {
+  font-size: 14px;
+  color: #888;
+}
+
+.deleteButton {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: #e60000;
+}
+
+.postMessage {
+  font-size: 16px;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.image {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.comments {
+  margin-top: 20px;
+}
+
+.comments h4 {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.comment {
+  background-color: #f1f1f1;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.commentProfilePicture {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.commentHeader strong {
+  font-size: 14px;
+  color: #333;
+}
+
+.commentDate {
+  font-size: 12px;
+  color: #888;
+  margin-left: auto;
+}
+
+.commentMessage {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.commentForm {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.commentInput {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.commentInput:focus {
+  border-color: #007bff;
+}
+
+.commentButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.commentButton:hover {
+  background-color: #0056b3;
+}
+
+.commentButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.showMoreButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.showMoreButton:hover {
+  background-color: #0056b3;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s ease;
+}
+
+.textarea:focus {
+  border-color: #007bff;
+}
+
+.fileInput {
+  font-size: 14px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.fileInput:focus {
+  border-color: #007bff;
+}
+
+.button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid #ffcdd2;
+}
+/* 🏆 نمط احترافي لقسم الملف الشخصي */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* مسافة بين الصورة والاسم */
+  background: #ffffff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+/* تأثير عند التحويم */
+.profile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 🖼️ صورة الملف الشخصي */
+.profilePicture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #007bff;
+  transition: border-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* تأثير عند التحويم على الصورة */
+.profile:hover .profilePicture {
+  border-color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* 📝 اسم المستخدم */
+.profile h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  transition: color 0.2s ease-in-out;
+}
+
+/* تأثير عند التحويم على الاسم */
+.profile:hover h3 {
+  color: #007bff;
+}

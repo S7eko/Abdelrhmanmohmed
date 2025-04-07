@@ -1,0 +1,117 @@
+.container_center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.add_course {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 40%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-height: 90vh; /* تحديد ارتفاع أقصى */
+  overflow-y: auto; /* إضافة scroll عند الحاجة */
+}
+
+.form_group {
+  margin-bottom: 15px;
+}
+
+.form_group label {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.form_group input,
+.form_group textarea,
+.form_group select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form_group input[type="checkbox"] {
+  width: auto;
+}
+
+.submit_button {
+  width: 100%;
+  padding: 8px;
+  background-color: #1C1E53;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit_button:hover {
+  background-color: #FCD980;
+}
+
+/* تنسيقات جديدة للزرين Save و Cancel */
+.button_group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.save_button,
+.cancel_button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.save_button {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.save_button:hover {
+  background-color: #218838;
+}
+
+.cancel_button {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.cancel_button:hover {
+  background-color: #c82333;
+}
+
+/* تنسيقات القوائم (requirements و learnings) */
+.list_item {
+  background: #f8f9fa;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* تنسيقات النصوص داخل القوائم */
+.list_item span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* تنسيقات النصوص المؤقتة */
+.form_group textarea {
+  resize: vertical;
+  height: 100px;
+  font-size: 14px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

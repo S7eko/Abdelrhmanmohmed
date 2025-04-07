@@ -1,0 +1,128 @@
+.aboutContainer {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 12px;
+  margin: 50px auto;
+  max-width: 1200px;
+}
+
+.aboutContent h1 {
+  font-size: 40px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+.aboutContent p {
+  font-size: 18px;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.feature {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+}
+
+.feature:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.feature h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 15px 0;
+  color: #333;
+}
+
+.feature p {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.icon {
+  color: #007bff;
+  font-size: 50px; /* أو أي حجم يناسبك */
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.feature:hover .icon {
+  color: #ff5722;
+  transform: scale(1.2); /* يكبر الأيقونة عند التمرير */
+}
+
+
+.learnMoreBtn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 15px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.learnMoreBtn:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+}
+
+.callToAction {
+  margin-top: 60px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  padding: 40px;
+  border-radius: 12px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.callToAction h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.callToAction p {
+  color: #f8f9fa;
+  font-size: 18px;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.joinNowBtn {
+  background: #ffcc00;
+  color: #333;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.joinNowBtn:hover {
+  background: #ff9900;
+  transform: scale(1.05);
+}

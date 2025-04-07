@@ -1,0 +1,224 @@
+.container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.container:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.SelectCourse {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.SelectCourse label {
+  font-weight: 600;
+  font-size: 18px;
+  color: #333;
+}
+
+.SelectCourse select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+  transition: all 0.3s ease;
+}
+
+.SelectCourse select:focus {
+  border-color: #007bff;
+  background-color: #eef5ff;
+  outline: none;
+}
+
+.secation {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease;
+}
+
+.secation:hover {
+  background-color: #f3f3f3;
+}
+
+.secation label {
+  font-weight: 600;
+  font-size: 18px;
+  color: #444;
+}
+
+.secation input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.secation input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.lecture {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #f7f7f7;
+  transition: background-color 0.3s ease;
+}
+
+.lecture:hover {
+  background-color: #f3f3f3;
+}
+
+.lecture input[type="text"], .lecture input[type="file"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.lecture input[type="text"]:focus, .lecture input[type="file"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.AddNewContent {
+  padding: 10px 14px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.AddNewContent:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.button {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn1, .btn2 {
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn1 {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn1:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn1:hover:not(:disabled) {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+.btn2 {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn2:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}
+
+.quiz {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease;
+}
+
+.quiz:hover {
+  background-color: #f3f3f3;
+}
+
+.quiz label {
+  font-weight: 600;
+  font-size: 18px;
+  color: #444;
+}
+
+.quiz input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.quiz input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option label {
+  font-weight: 500;
+  font-size: 16px;
+  color: #555;
+}
+
+.option input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.option input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+}

@@ -1,0 +1,173 @@
+/* أيقونة الدردشة */
+.chatIcon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  padding: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  z-index: 1001;
+}
+
+.chatIcon:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
+/* حاوية الشات */
+.chatbotContainer {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: min(95vw, 500px);
+
+  height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+@media (max-width: 480px) {
+  .chatbotContainer {
+    width: 95%;
+    height: 450px;
+    right: 10px;
+    bottom: 70px;
+  }
+}
+
+/* زر الإغلاق */
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: #000;
+}
+
+/* عنوان الشات */
+.title {
+  background-color: #007bff;
+  color: #fff;
+  padding: 12px;
+  margin: 0;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* نافذة الرسائل */
+.chatWindow {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #f1f1f1;
+}
+
+.chatWindow::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatWindow::-webkit-scrollbar-thumb {
+  background: #007bff;
+  border-radius: 10px;
+}
+
+/* الرسائل */
+.message {
+  max-width: 90%;
+  padding: 14px;
+  border-radius: 16px;
+  word-wrap: break-word;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+
+  line-height: 1.922;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+}
+
+.userMessage {
+  background-color: #007bff;
+  color: #fff;
+  align-self: flex-end;
+  margin-left: auto;
+  border-bottom-right-radius: 6px;
+  border-top-left-radius: 6px;
+}
+
+.botMessage {
+  background-color: #f1f1f1;
+  color: #333;
+  align-self: flex-start;
+  margin-right: auto;
+  border-bottom-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+/* حاوية الإدخال */
+.inputContainer {
+  display: flex;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+  align-items: center;
+}
+
+.inputContainer input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.inputContainer input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.inputContainer button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.inputContainer button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.inputContainer button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

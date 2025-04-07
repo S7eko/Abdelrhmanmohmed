@@ -1,0 +1,49 @@
+.sucses {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* لضبط النص في المنتصف */
+  height: 100vh;
+  /* اجعل الارتفاع يغطي الشاشة بالكامل */
+  margin: 0 auto;
+  /* للمحاذاة الأفقية */
+  gap: 20px;
+  /* لإضافة مسافة بين العناصر */
+}
+
+.sucses h2 {
+  font-size: 2rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.sucses p {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.btn {
+  background-color: #FCD980;
+  /* لون الزر */
+  color: #000;
+  /* لون النص داخل الزر */
+  border: none;
+  margin-top: 30px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+  background-color: #FCD980;
+  /* لون الزر عند التحويم */
+  transform: scale(1.05);
+  /* تأثير الزر عند التحويم */
+}
