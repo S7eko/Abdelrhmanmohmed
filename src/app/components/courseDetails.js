@@ -15,12 +15,12 @@ const CourseDetails = () => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState("");
   const [newRating, setNewRating] = useState(5);
-  const [hasReviewed, setHasReviewed] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false); // حالة جديدة
 
   const router = useRouter();
   const { id } = useParams();
 
-  // Fetch course details
+  // جلب تفاصيل الكورس
   useEffect(() => {
     if (!id) return;
 
@@ -33,7 +33,13 @@ const CourseDetails = () => {
         }
 
         const data = await response.json();
-        setCourse(data);
+        console.log("Course data fetched:", data);
+
+        if (data) {
+          setCourse(data);
+        } else {
+          throw new Error("Invalid data format");
+        }
       } catch (error) {
         console.error("Error fetching course details:", error);
         setError(error.message);
@@ -45,24 +51,20 @@ const CourseDetails = () => {
     fetchCourseDetails();
   }, [id]);
 
-  // Check user enrollment
+  // التحقق من اشتراك المستخدم في الكورس
   useEffect(() => {
     const checkEnrollment = async () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        setIsEnrolled(false);
+        setEnrollmentChecked(true);
         return;
       }
 
       try {
-        const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
-        if (enrolledCourses[id]) {
-          setIsEnrolled(true);
-          return;
-        }
-
+        // أولاً: التحقق من حالة التسجيل من الخادم مباشرة
         const response = await fetch(`https://skillbridge.runasp.net/api/Courses/${id}/isEnrolled`, {
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -72,24 +74,33 @@ const CourseDetails = () => {
           throw new Error("Failed to check enrollment");
         }
 
-        const data = await response.json();
-        setIsEnrolled(data.isEnrolled);
+        // هنا نعتبر أن الاستجابة هي true/false مباشرة
+        const isEnrolled = await response.json();
+        setIsEnrolled(isEnrolled);
 
-        if (data.isEnrolled) {
+        // تحديث localStorage للحفاظ على الحالة محلياً
+        if (isEnrolled) {
           const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
           enrolledCourses[id] = true;
           localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
         }
       } catch (error) {
         console.error("Error checking enrollment:", error);
-        setIsEnrolled(false);
+
+        // كحالة احتياطية، نتحقق من localStorage إذا فشل الاتصال بالخادم
+        const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
+        if (enrolledCourses[id]) {
+          setIsEnrolled(true);
+        }
+      } finally {
+        setEnrollmentChecked(true);
       }
     };
 
     checkEnrollment();
   }, [id]);
 
-  // Fetch reviews
+  // جلب المراجعات الحالية
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -109,7 +120,7 @@ const CourseDetails = () => {
     fetchReviews();
   }, [id]);
 
-  // Check if user has reviewed
+  // التحقق مما إذا كان المستخدم قد قام بمراجعة الكورس
   useEffect(() => {
     const checkIfReviewed = async () => {
       const token = localStorage.getItem("token");
@@ -130,7 +141,7 @@ const CourseDetails = () => {
         }
 
         const data = await response.json();
-        setHasReviewed(data.hasReviewed);
+        setHasReviewed(data.hasReviewed); // تحديث الحالة بناءً على الاستجابة
       } catch (error) {
         console.error("Error checking if reviewed:", error);
       }
@@ -139,34 +150,23 @@ const CourseDetails = () => {
     checkIfReviewed();
   }, [id]);
 
+  // معالجة عملية التسجيل في الكورس
   const handlePurchase = async () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      Swal.fire({
-        title: "Login Required",
-        text: "You need to login to enroll in this course",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Login Now",
-        cancelButtonText: "Cancel",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          router.push("/auth/login");
-        }
-      });
+      setError("You need to be logged in to purchase the course.");
+      Swal.fire("Error", "You need to be logged in to purchase the course.", "error");
       return;
     }
 
     Swal.fire({
-      title: "Enroll in Course",
-      text: `Are you sure you want to enroll in "${course.title}"?`,
-      icon: "question",
+      title: "Are you sure?",
+      text: "Do you want to enroll in this course?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
       confirmButtonText: "Yes, enroll!",
-      cancelButtonText: "Cancel",
+      cancelButtonText: "No, cancel",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -180,56 +180,30 @@ const CourseDetails = () => {
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to enroll");
+            throw new Error(errorData.message || "Failed to enroll in the course");
           }
 
-          Swal.fire({
-            title: "Enrolled!",
-            text: "You have successfully enrolled in this course",
-            icon: "success",
-          });
+          Swal.fire("Success!", "Course enrolled successfully!", "success");
           setIsEnrolled(true);
 
           const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
           enrolledCourses[id] = true;
           localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
         } catch (error) {
-          console.error("Error enrolling:", error);
-          Swal.fire({
-            title: "Error",
-            text: error.message,
-            icon: "error",
-          });
+          console.error("Error enrolling in the course:", error);
+          setError("Failed to enroll in the course");
+          Swal.fire("Error", error.message, "error");
         }
       }
     });
   };
 
+  // إضافة مراجعة جديدة
   const handleAddReview = async () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      Swal.fire({
-        title: "Login Required",
-        text: "You need to login to add a review",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Login Now",
-        cancelButtonText: "Cancel",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          router.push("/auth/login");
-        }
-      });
-      return;
-    }
-
-    if (!newReview.trim()) {
-      Swal.fire({
-        title: "Review Required",
-        text: "Please write your review before submitting",
-        icon: "warning",
-      });
+      Swal.fire("Error", "You need to be logged in to add a review.", "error");
       return;
     }
 
@@ -251,26 +225,18 @@ const CourseDetails = () => {
         throw new Error(errorData.message || "Failed to add review");
       }
 
-      Swal.fire({
-        title: "Success!",
-        text: "Your review has been submitted",
-        icon: "success",
-      });
+      Swal.fire("Success!", "Review added successfully!", "success");
       setNewReview("");
       setNewRating(5);
-      setHasReviewed(true);
+      setHasReviewed(true); // تحديث الحالة بعد إضافة المراجعة
 
-      // Refresh reviews
+      // جلب المراجعات المحدثة
       const reviewsResponse = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}`);
       const reviewsData = await reviewsResponse.json();
       setReviews(reviewsData);
     } catch (error) {
       console.error("Error adding review:", error);
-      Swal.fire({
-        title: "Error",
-        text: error.message,
-        icon: "error",
-      });
+      Swal.fire("Error", error.message, "error");
     }
   };
 
@@ -281,200 +247,160 @@ const CourseDetails = () => {
     <div className={classes.courseDetails}>
       {course ? (
         <>
-          {/* Reordered layout */}
-          <div className={classes.courseHeader}>
-            <div className={classes.courseImage}>
-              <Image className={classes.image} src={course.image} alt={course.title} width={800} height={450} />
-            </div>
+          {/* قسم تفاصيل الكورس */}
+          <div className={classes.courseDetails_image}>
+            <Image src={course.image} alt={course.title} width={500} height={300} />
+          </div>
+          <div className={classes.courseDetails_info}>
+            {/* Course Image */}
 
-            <div className={classes.courseBasicInfo}>
-              <h1 className={classes.courseTitle}>{course.title}</h1>
-              {course.subTitle && (
-                <h2 className={classes.courseSubtitle}>{course.subTitle}</h2>
+
+            {/* Course Title & Subtitle */}
+            <h1>
+              <strong>Title:</strong> {course.title}
+            </h1>
+            {course.subTitle && (
+              <h2 style={{ fontWeight: 'normal', fontStyle: 'italic', color: '#666' }}>
+                {course.subTitle}
+              </h2>
+            )}
+
+            {/* Course Description */}
+            <p>
+              <strong>Description:</strong> {course.description}
+            </p>
+
+            {/* Instructor Info */}
+            <p>
+              <strong>Instructor:</strong> {course.instructor}
+            </p>
+
+            {/* Other Course Details */}
+            <p>
+              <strong>Level:</strong> {course.level}
+            </p>
+            <p>
+              <strong>Category:</strong> {course.category}
+            </p>
+            <p>
+              <strong>Language:</strong> {course.language}
+            </p>
+            <p>
+              <strong>Rating:</strong> {course.rating}
+            </p>
+            <p>
+              <strong>Students:</strong> {course.students}
+            </p>
+
+            {/* Last Updated */}
+            <p>
+              <strong>Last Updated:</strong>{" "}
+              {course.lastUpdated
+                ? new Date(course.lastUpdated).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+                : "N/A"}
+            </p>
+
+            {/* Requirements */}
+            <p>
+              <strong>Requirements:</strong>
+            </p>
+            <ul>
+              {course.requirements?.length > 0 ? (
+                course.requirements.map((req, index) => (
+                  <li key={index}>{req.name}</li>
+                ))
+              ) : (
+                <li>No requirements</li>
               )}
+            </ul>
 
-              {/* Enrollment Button - Moved to top */}
-              <div className={classes.enrollmentSection}>
-                {!isEnrolled ? (
-                  <button className={classes.enrollBtn} onClick={handlePurchase}>
-                    Enroll in Course
-                  </button>
-                ) : (
-                  <div className={classes.enrolledActions}>
-                    <button
-                      className={classes.continueBtn}
-                      onClick={() => router.push(`/course/learning-room?id=${id}`)}
-                    >
-                      Continue Learning
-                    </button>
-                    <button
-                      className={classes.communityBtn}
-                      onClick={() => router.push(`/course/Community?id=${id}`)}
-                    >
-                      Join Community
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            {/* Learnings */}
+            <p>
+              <strong>What You Will Learn:</strong>
+            </p>
+            <ul>
+              {course.learnings?.length > 0 ? (
+                course.learnings.map((learn, index) => (
+                  <li key={index}>{learn.name}</li>
+                ))
+              ) : (
+                <li>No learning outcomes listed</li>
+              )}
+            </ul>
           </div>
 
-          {/* Course Details Section */}
-          <div className={classes.courseDetailsSection}>
-            <div className={classes.detailsColumn}>
-              <div className={classes.detailItem}>
-                <span className={classes.detailLabel}>Instructor:</span>
-                <span className={classes.detailValue}>{course.instructor}</span>
-              </div>
-              <div className={classes.detailItem}>
-                <span className={classes.detailLabel}>Level:</span>
-                <span className={classes.detailValue}>{course.level}</span>
-              </div>
-              <div className={classes.detailItem}>
-                <span className={classes.detailLabel}>Category:</span>
-                <span className={classes.detailValue}>{course.category}</span>
-              </div>
-            </div>
 
-            <div className={classes.detailsColumn}>
-              <div className={classes.detailItem}>
-                <span className={classes.detailLabel}>Language:</span>
-                <span className={classes.detailValue}>{course.language}</span>
-              </div>
-              <div className={classes.detailItem}>
-                <span className={classes.detailLabel}>Rating:</span>
-                <span className={classes.detailValue}>{course.rating} ⭐ ({course.students} students)</span>
-              </div>
-              <div className={classes.detailItem}>
-                <span className={classes.detailLabel}>Last Updated:</span>
-                <span className={classes.detailValue}>
-                  {course.lastUpdated
-                    ? new Date(course.lastUpdated).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })
-                    : "N/A"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Description Section */}
-          <div className={classes.descriptionSection}>
-            <h2 className={classes.sectionTitle}>About This Course</h2>
-            <p className={classes.descriptionText}>{course.description}</p>
-          </div>
-
-          {/* Requirements Section */}
-          <div className={classes.requirementsSection}>
-            <h2 className={classes.sectionTitle}>Requirements</h2>
-            {course.requirements?.length > 0 ? (
-              <ul className={classes.requirementsList}>
-                {course.requirements.map((req, index) => (
-                  <li key={index} className={classes.requirementItem}>
-                    {req.name}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={classes.noContent}>No specific requirements</p>
-            )}
-          </div>
-
-          {/* Learnings Section */}
-          <div className={classes.learningsSection}>
-            <h2 className={classes.sectionTitle}>What You'll Learn</h2>
-            {course.learnings?.length > 0 ? (
-              <ul className={classes.learningsList}>
-                {course.learnings.map((learn, index) => (
-                  <li key={index} className={classes.learningItem}>
-                    {learn.name}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={classes.noContent}>No learning outcomes listed</p>
-            )}
-          </div>
-
-          {/* Reviews Section */}
+          {/* قسم المراجعات */}
           <div className={classes.reviewsSection}>
-            <h2 className={classes.sectionTitle}>
-              Reviews ({reviews.length})
-              {reviews.length > 0 && (
-                <span className={classes.averageRating}>
-                  Average Rating:{" "}
-                  {(
-                    reviews.reduce((sum, review) => sum + review.rating, 0) /
-                    reviews.length
-                  ).toFixed(1)}
-                  /5
-                </span>
-              )}
-            </h2>
-
+            <h2>Reviews</h2>
             {reviews.length === 0 ? (
-              <p className={classes.noReviews}>No reviews yet. Be the first to review!</p>
+              <p>No reviews yet. Be the first to review this course!</p>
             ) : (
-              <div className={classes.reviewsList}>
-                {reviews.map((review, index) => (
-                  <div key={index} className={classes.reviewItem}>
-                    <div className={classes.reviewHeader}>
-                      <span className={classes.reviewAuthor}>{review.userName}</span>
-                      <span className={classes.reviewRating}>
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <span
-                            key={i}
-                            className={i < review.rating ? classes.starFilled : classes.starEmpty}
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </span>
-                      <span className={classes.reviewDate}>
-                        {new Date(review.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className={classes.reviewText}>{review.review}</p>
-                  </div>
-                ))}
-              </div>
+              reviews.map((review, index) => (
+                <div key={index} className={classes.reviewItem}>
+                  <p>
+                    <strong>{review.userName}</strong> - Rating: {review.rating}/5
+                  </p>
+                  <p>{review.review}</p>
+                </div>
+              ))
             )}
 
-            {/* Add Review Form */}
+            {/* نموذج إضافة مراجعة جديدة */}
             {isEnrolled && !hasReviewed && (
               <div className={classes.addReviewForm}>
-                <h3 className={classes.formTitle}>Add Your Review</h3>
+                <h3>Add a Review</h3>
+                <textarea
+                  value={newReview}
+                  onChange={(e) => setNewReview(e.target.value)}
+                  placeholder="Write your review..."
+                  className={classes.reviewTextarea}
+                />
                 <div className={classes.ratingInput}>
-                  <label>Your Rating:</label>
+                  <label>Rating:</label>
                   <select
                     value={newRating}
                     onChange={(e) => setNewRating(Number(e.target.value))}
-                    className={classes.ratingSelect}
                   >
-                    {[5, 4, 3, 2, 1].map((num) => (
+                    {[1, 2, 3, 4, 5].map((num) => (
                       <option key={num} value={num}>
-                        {num} Star{num !== 1 ? "s" : ""}
+                        {num}
                       </option>
                     ))}
                   </select>
                 </div>
-                <textarea
-                  value={newReview}
-                  onChange={(e) => setNewReview(e.target.value)}
-                  placeholder="Share your experience with this course..."
-                  className={classes.reviewTextarea}
-                  rows={5}
-                />
-                <button
-                  onClick={handleAddReview}
-                  className={classes.submitReviewBtn}
-                  disabled={!newReview.trim()}
-                >
+                <button className={classes.btn} onClick={handleAddReview}>
                   Submit Review
                 </button>
               </div>
+            )}
+          </div>
+
+          {/* زر التسجيل أو الاستمرار */}
+          <div className={classes.courseDetails_button}>
+            {!isEnrolled ? (
+              <button className={classes.btn} onClick={handlePurchase}>
+                Enroll in COURSE
+              </button>
+            ) : (
+              <>
+                <button
+                  className={classes.btn}
+                  onClick={() => router.push(`/course/learning-room?id=${id}`)}
+                >
+                  Continue
+                </button>
+                <button
+                  className={classes.btn}
+                  onClick={() => router.push(`/course/Community?id=${id}`)}
+                >
+                  Community
+                </button>
+              </>
             )}
           </div>
         </>
