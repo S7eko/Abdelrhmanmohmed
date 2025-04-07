@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import styles from "../../style/addFile.module.css";
+import styles from "../../style/Update.module.css";
 
 const UpdateCourse = () => {
   const [courses, setCourses] = useState([]);
@@ -199,7 +199,7 @@ const UpdateCourse = () => {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Update Course</h2>
-      <form onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
           <label className={styles.label}>Select Course:</label>
           <select
