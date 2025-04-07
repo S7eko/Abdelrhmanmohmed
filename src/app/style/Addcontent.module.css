@@ -95,42 +95,33 @@
 }
 
 .AddNewContent {
-  background-color: var(--primary);
-  color: white;
+  background-color: #007bff;
+  color: #fff;
 }
 
 .AddNewContent:hover {
-  background-color: var(--primary-hover);
+  background-color: #0056b3;
   transform: scale(1.05);
 }
 
-.button {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-}
-
 .btn1 {
-  background-color: var(--success);
-  color: white;
-}
-
-.btn1:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+  background-color: #28a745;
+  color: #fff;
 }
 
 .btn1:hover:not(:disabled) {
-  background-color: var(--success-hover);
+  background-color: #218838;
   transform: scale(1.05);
 }
 
 .btn2 {
-  background-color: var(--danger);
-  color: white;
+  background-color: #dc3545;
+  color: #fff;
+  margin-left: 10px;
+
 }
 
 .btn2:hover {
-  background-color: var(--danger-hover);
+  background-color: #c82333;
   transform: scale(1.05);
 }
