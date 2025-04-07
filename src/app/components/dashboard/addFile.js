@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import styles from "../../style/addFile.module.css";
@@ -14,7 +15,7 @@ const AddFile = () => {
   const [isLoadingSections, setIsLoadingSections] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Fetch courses for the instructor
+  // جلب الكورسات للمدرس
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -30,8 +31,7 @@ const AddFile = () => {
         });
 
         if (!response.ok) {
-          const errorData = await parseErrorResponse(response);
-          throw new Error(errorData.message || "Failed to fetch courses");
+          throw new Error("Failed to fetch courses");
         }
 
         const data = await response.json();
@@ -47,7 +47,7 @@ const AddFile = () => {
     fetchCourses();
   }, []);
 
-  // Fetch sections when course is selected
+  // جلب الأقسام عند اختيار كورس
   useEffect(() => {
     if (!selectedCourseId) return;
 
@@ -65,8 +65,7 @@ const AddFile = () => {
         );
 
         if (!response.ok) {
-          const errorData = await parseErrorResponse(response);
-          throw new Error(errorData.message || "Failed to fetch sections");
+          throw new Error("Failed to fetch sections");
         }
 
         const data = await response.json();
@@ -93,8 +92,7 @@ const AddFile = () => {
   const handleCourseChange = (e) => {
     setSelectedCourseId(e.target.value);
     setSelectedSectionId("");
-    setFile(null);
-    setFileName("");
+    setSections([]);
   };
 
   const handleSectionChange = (e) => {
@@ -105,7 +103,7 @@ const AddFile = () => {
     e.preventDefault();
     setUploadProgress(0);
 
-    // Validate inputs
+    // التحقق من المدخلات
     if (!selectedSectionId) {
       showWarning("Please select a section");
       return;
@@ -116,13 +114,13 @@ const AddFile = () => {
       return;
     }
 
-    // Validate file size (10MB limit)
+    // التحقق من حجم الملف (10MB كحد أقصى)
     if (file.size > 10 * 1024 * 1024) {
       showWarning("Maximum file size is 10MB", "File too large");
       return;
     }
 
-    // Validate file extension
+    // التحقق من امتداد الملف
     const allowedExtensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx'];
     const fileExtension = file.name.split('.').pop().toLowerCase();
     if (!allowedExtensions.includes(`.${fileExtension}`)) {
@@ -141,8 +139,8 @@ const AddFile = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      // Create progress tracking
-      const xhr = new XMLhttpsRequest();
+      // استخدام XMLHttpRequest لتتبع التقدم
+      const xhr = new XMLHttpRequest();
 
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
@@ -151,57 +149,43 @@ const AddFile = () => {
         }
       });
 
-      const uploadPromise = new Promise((resolve, reject) => {
+      const response = await new Promise((resolve, reject) => {
         xhr.onreadystatechange = () => {
           if (xhr.readyState === 4) {
             if (xhr.status >= 200 && xhr.status < 300) {
               try {
-                const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
-                resolve(response);
+                resolve(JSON.parse(xhr.responseText));
               } catch (error) {
                 resolve({});
               }
             } else {
               try {
-                const errorResponse = xhr.responseText ? JSON.parse(xhr.responseText) : {};
-                reject(new Error(errorResponse.message || `Server error (${xhr.status})`));
+                reject(JSON.parse(xhr.responseText));
               } catch {
-                reject(new Error(`Server error (${xhr.status})`));
+                reject(new Error(`Upload failed with status ${xhr.status}`));
               }
             }
           }
         };
 
-        xhr.onerror = () => {
-          reject(new Error("Network error occurred"));
-        };
-
+        xhr.onerror = () => reject(new Error("Network error"));
         xhr.open("POST", `https://skillbridge.runasp.net/api/Files/${selectedSectionId}`);
         xhr.setRequestHeader("Authorization", `Bearer ${token}`);
         xhr.send(formData);
       });
 
-      // Set timeout for the upload
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => {
-          xhr.abort();
-          reject(new Error("Request timed out after 30 seconds"));
-        }, 30000);
-      });
-
-      const response = await Promise.race([uploadPromise, timeoutPromise]);
-
       showSuccess(response.message || "File uploaded successfully!");
       resetForm();
     } catch (error) {
-      handleUploadError(error);
+      console.error("Upload error:", error);
+      showError("Upload failed", error.message || "An error occurred during upload");
     } finally {
       setIsSubmitting(false);
       setUploadProgress(0);
     }
   };
 
-  // Helper functions
+  // دوال مساعدة
   const showWarning = (text, title = "Warning") => {
     Swal.fire({
       icon: "warning",
@@ -216,7 +200,6 @@ const AddFile = () => {
       title: "Success!",
       text: message,
       timer: 2000,
-      showConfirmButton: false,
     });
   };
 
@@ -231,57 +214,6 @@ const AddFile = () => {
   const resetForm = () => {
     setFile(null);
     setFileName("");
-    // Don't reset course/section selection
-  };
-
-  const parseErrorResponse = async (response) => {
-    try {
-      const errorText = await response.text();
-      try {
-        return JSON.parse(errorText);
-      } catch {
-        return { message: errorText || `Server error (${response.status})` };
-      }
-    } catch {
-      return { message: `Server error (${response.status})` };
-    }
-  };
-
-  const handleUploadError = (error) => {
-    console.error("Upload Error:", error);
-
-    let errorMessage = error.message;
-    let showRetryButton = true;
-
-    if (error.message.includes("Network error")) {
-      errorMessage = "Network error. Please check your internet connection.";
-    } else if (error.message.includes("timed out")) {
-      errorMessage = "Request timed out. The server is taking too long to respond.";
-    } else if (error.message.includes("401")) {
-      errorMessage = "Session expired. Please login again.";
-      showRetryButton = false;
-    } else if (error.message.includes("500")) {
-      errorMessage = "Server error. Please try again later or contact support.";
-    }
-
-    Swal.fire({
-      icon: "error",
-      title: "Upload Failed",
-      html: `
-        <div>${errorMessage}</div>
-        ${process.env.NODE_ENV === 'development' ?
-          `<div class="${styles.errorDetails}">Error details: ${error.message}</div>` : ''
-        }
-      `,
-      showCancelButton: showRetryButton,
-      confirmButtonText: "OK",
-      cancelButtonText: "Retry",
-    }).then((result) => {
-      if (result.isDismissed) {
-        // Retry the upload
-        handleSubmit({ preventDefault: () => { } });
-      }
-    });
   };
 
   if (isLoadingCourses) {
@@ -291,13 +223,13 @@ const AddFile = () => {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Upload File to Section</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGroup}>
           <label className={styles.label}>Select Course:</label>
           <select
             value={selectedCourseId}
             onChange={handleCourseChange}
-            className={styles.input}
+            className={styles.select}
             required
             disabled={isSubmitting}
           >
@@ -316,7 +248,7 @@ const AddFile = () => {
             <select
               value={selectedSectionId}
               onChange={handleSectionChange}
-              className={styles.input}
+              className={styles.select}
               required
               disabled={isLoadingSections || isSubmitting}
             >
@@ -327,7 +259,7 @@ const AddFile = () => {
                 </option>
               ))}
             </select>
-            {isLoadingSections && <div className={styles.loading}>Loading sections...</div>}
+            {isLoadingSections && <div className={styles.loadingText}>Loading sections...</div>}
           </div>
         )}
 
@@ -341,6 +273,7 @@ const AddFile = () => {
               className={styles.fileInput}
               required
               disabled={isSubmitting}
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
             />
             <label htmlFor="fileUpload" className={styles.fileInputLabel}>
               {fileName || "Choose a file"}
@@ -348,13 +281,13 @@ const AddFile = () => {
           </div>
           {fileName && (
             <div className={styles.fileInfo}>
-              <span>Selected file: {fileName}</span>
+              <span>Selected: {fileName}</span>
               <span>Size: {(file.size / 1024 / 1024).toFixed(2)} MB</span>
             </div>
           )}
         </div>
 
-        {uploadProgress > 0 && uploadProgress < 100 && (
+        {uploadProgress > 0 && (
           <div className={styles.progressContainer}>
             <div
               className={styles.progressBar}
@@ -365,22 +298,20 @@ const AddFile = () => {
           </div>
         )}
 
-        <div className={styles.buttonGroup}>
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={isSubmitting || !selectedSectionId || !file}
-          >
-            {isSubmitting ? (
-              <>
-                <span className={styles.spinner}></span>
-                {uploadProgress > 0 ? `Uploading (${uploadProgress}%)` : "Uploading..."}
-              </>
-            ) : (
-              "Upload File"
-            )}
-          </button>
-        </div>
+        <button
+          type="submit"
+          className={styles.submitButton}
+          disabled={isSubmitting || !selectedSectionId || !file}
+        >
+          {isSubmitting ? (
+            <>
+              <span className={styles.spinner}></span>
+              {uploadProgress > 0 ? `Uploading (${uploadProgress}%)` : "Uploading..."}
+            </>
+          ) : (
+            "Upload File"
+          )}
+        </button>
       </form>
     </div>
   );

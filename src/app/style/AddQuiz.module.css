@@ -1,47 +1,61 @@
 .container {
   max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-in-out;
 }
 
 .title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
   text-align: center;
+  color: #1c1e53;
 }
 
 .formGroup {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #333;
 }
 
 .input {
   width: 100%;
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 12px;
+  font-size: 15px;
+  border: 1px solid #dcdfe3;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  border-color: #1c1e53;
+  outline: none;
+  background-color: #fff;
 }
 
 .button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
-  background-color: #007bff;
+  font-weight: 600;
+  background-color: #1c1e53;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 12px;
 }
 
 .button:disabled {
@@ -50,5 +64,6 @@
 }
 
 .button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #fcd980;
+  color: #1c1e53;
 }

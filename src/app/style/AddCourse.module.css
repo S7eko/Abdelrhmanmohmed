@@ -2,73 +2,95 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh;
+  height: 100vh;
+  padding: 20px;
+  background-color: #f5f7fa;
 }
 
 .add_course {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 40%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  max-height: 90vh; /* تحديد ارتفاع أقصى */
-  overflow-y: auto; /* إضافة scroll عند الحاجة */
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-height: 90vh;
+  overflow-y: auto;
+  transition: all 0.3s ease-in-out;
 }
 
 .form_group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .form_group label {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: inline-block;
+  color: #333;
 }
 
 .form_group input,
 .form_group textarea,
 .form_group select {
   width: 100%;
-  padding: 8px;
+  padding: 12px 14px;
   margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+  border: 1px solid #dcdfe3;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #f9fafb;
+  transition: border-color 0.3s ease;
+}
+
+.form_group input:focus,
+.form_group textarea:focus,
+.form_group select:focus {
+  border-color: #1c1e53;
+  outline: none;
+  background-color: #fff;
 }
 
 .form_group input[type="checkbox"] {
   width: auto;
+  margin-right: 8px;
 }
 
 .submit_button {
   width: 100%;
-  padding: 8px;
-  background-color: #1C1E53;
+  padding: 12px;
+  background-color: #1c1e53;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .submit_button:hover {
-  background-color: #FCD980;
+  background-color: #fcd980;
+  color: #1c1e53;
 }
 
-/* تنسيقات جديدة للزرين Save و Cancel */
+/* زرّين Save و Cancel */
 .button_group {
   display: flex;
+  justify-content: flex-end;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .save_button,
 .cancel_button {
-  padding: 8px 12px;
+  padding: 10px 16px;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  border-radius: 8px;
   font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
@@ -90,28 +112,26 @@
   background-color: #c82333;
 }
 
-/* تنسيقات القوائم (requirements و learnings) */
+/* تنسيقات عناصر القائمة */
 .list_item {
-  background: #f8f9fa;
-  padding: 8px;
-  border-radius: 4px;
-  margin-bottom: 5px;
+  background: #f0f2f5;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
   font-size: 14px;
   color: #333;
+  border-left: 4px solid #1c1e53;
 }
 
-/* تنسيقات النصوص داخل القوائم */
+/* محتوى داخل العنصر */
 .list_item span {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  font-weight: 500;
 }
 
-/* تنسيقات النصوص المؤقتة */
+/* textarea */
 .form_group textarea {
   resize: vertical;
-  height: 100px;
-  font-size: 14px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  min-height: 120px;
 }
