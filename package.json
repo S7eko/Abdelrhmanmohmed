@@ -6,9 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predeploy": "npm run build",
+    "deploy": "next export && gh-pages -d out --force"
   },
   "dependencies": {
+    "homepage": "https://S7eko.github.io/SkillVerse",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "axios": "^1.8.1",
@@ -22,6 +25,7 @@
     "sweetalert2": "^11.15.10"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3"
+    "@eslint/eslintrc": "^3",
+    "gh-pages": "^6.3.0"
   }
 }

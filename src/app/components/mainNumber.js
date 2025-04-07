@@ -12,7 +12,7 @@ const MainNumber = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('http://skillbridge.runasp.net/api/Stats');
+        const response = await fetch('https://skillbridge.runasp.net/api/Stats');
         if (!response.ok) {
           throw new Error('Failed to fetch statistics');
         }

@@ -23,7 +23,7 @@ const Mycourses = () => {
           return;
         }
 
-        const response = await fetch("http://skillbridge.runasp.net/api/Courses/student", {
+        const response = await fetch("https://skillbridge.runasp.net/api/Courses/student", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the request

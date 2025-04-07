@@ -20,7 +20,7 @@ const CourseDetails = () => {
 
     const fetchCourseDetails = async () => {
       try {
-        const response = await fetch(`http://skillbridge.runasp.net/api/courses/${id}`);
+        const response = await fetch(`https://skillbridge.runasp.net/api/courses/${id}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch course details");

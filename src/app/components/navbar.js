@@ -45,7 +45,7 @@ const Navbar = () => {
       }
 
       try {
-        const response = await fetch("http://skillbridge.runasp.net/api/Users/currentUser", {
+        const response = await fetch("https://skillbridge.runasp.net/api/Users/currentUser", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -83,7 +83,7 @@ const Navbar = () => {
     if (!token) return;
 
     try {
-      const res = await fetch("http://skillbridge.runasp.net/api/Notifications", {
+      const res = await fetch("https://skillbridge.runasp.net/api/Notifications", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -100,7 +100,7 @@ const Navbar = () => {
     if (!token) return;
 
     try {
-      await fetch("http://skillbridge.runasp.net/api/Notifications/markRead", {
+      await fetch("https://skillbridge.runasp.net/api/Notifications/markRead", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });

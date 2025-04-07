@@ -21,7 +21,7 @@ const Video = () => {
   const [downloadingFile, setDownloadingFile] = useState(null);
 
   // Constants
-  const API_BASE_URL = "http://skillbridge.runasp.net";
+  const API_BASE_URL = "https://skillbridge.runasp.net";
   const UPLOADS_BASE_PATH = "/uploads/";
 
   // Router and search params

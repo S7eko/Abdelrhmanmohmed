@@ -35,7 +35,7 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch("http://skillbridge.runasp.net/api/Users/login", {
+      const response = await fetch("https://skillbridge.runasp.net/api/Users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

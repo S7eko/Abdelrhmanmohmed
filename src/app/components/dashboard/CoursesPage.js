@@ -10,7 +10,7 @@ const CoursesPage = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://skillbridge.runasp.net/api/courses");
+        const response = await fetch("https://skillbridge.runasp.net/api/courses");
         const data = await response.json();
         setCourses(data); // حفظ الكورسات
       } catch (error) {

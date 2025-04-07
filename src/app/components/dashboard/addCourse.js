@@ -128,7 +128,7 @@ const AddCourse = () => {
         formData.append("Image", imageFile); // إضافة ملف الصورة
       }
 
-      const response = await fetch("http://skillbridge.runasp.net/api/courses", {
+      const response = await fetch("https://skillbridge.runasp.net/api/courses", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

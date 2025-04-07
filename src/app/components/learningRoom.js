@@ -21,7 +21,7 @@ const Sheko = () => {
 
       try {
         // جلب بيانات الكورس
-        const courseResponse = await fetch(`http://skillbridge.runasp.net/api/courses/${courseId}`);
+        const courseResponse = await fetch(`https://skillbridge.runasp.net/api/courses/${courseId}`);
         if (!courseResponse.ok) {
           throw new Error("Failed to fetch course details");
         }
@@ -36,7 +36,7 @@ const Sheko = () => {
         }
 
         // جلب الأقسام الخاصة بالكورس
-        const sectionsResponse = await fetch(`http://skillbridge.runasp.net/api/Sections/${courseId}`, {
+        const sectionsResponse = await fetch(`https://skillbridge.runasp.net/api/Sections/${courseId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

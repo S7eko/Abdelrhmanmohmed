@@ -16,7 +16,7 @@ const Information = () => {
         }
 
         const response = await fetch(
-          "http://skillbridge.runasp.net/api/Users/currentUser",
+          "https://skillbridge.runasp.net/api/Users/currentUser",
           {
             headers: {
               Authorization: `Bearer ${token}`, // Include the token in the request

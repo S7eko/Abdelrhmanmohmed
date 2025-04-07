@@ -20,7 +20,7 @@ const AddContent = () => {
           throw new Error("Authentication token is missing");
         }
 
-        const response = await fetch("http://skillbridge.runasp.net/api/Courses/instructor", {
+        const response = await fetch("https://skillbridge.runasp.net/api/Courses/instructor", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -108,7 +108,7 @@ const AddContent = () => {
         });
 
         const response = await fetch(
-          `http://skillbridge.runasp.net/api/Sections/${selectedCourse}`,
+          `https://skillbridge.runasp.net/api/Sections/${selectedCourse}`,
           {
             method: "POST",
             headers: {

@@ -53,7 +53,7 @@ const ChangeImage = () => {
         return;
       }
 
-      const response = await fetch("http://skillbridge.runasp.net/api/Users/changePicture", {
+      const response = await fetch("https://skillbridge.runasp.net/api/Users/changePicture", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the request

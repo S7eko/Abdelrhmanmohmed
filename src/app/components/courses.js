@@ -26,9 +26,9 @@ const Courses = () => {
     const fetchCourses = async () => {
       try {
         const courseResponse = await fetch(
-          `http://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
+          `https://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
         );
-        const categoryResponse = await fetch(`http://skillbridge.runasp.net/api/categories`);
+        const categoryResponse = await fetch(`https://skillbridge.runasp.net/api/categories`);
 
         if (!courseResponse.ok || !categoryResponse.ok) {
           throw new Error("Failed to fetch courses or categories");

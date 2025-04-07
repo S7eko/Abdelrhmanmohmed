@@ -66,7 +66,7 @@ const ChangePassword = () => {
       };
 
       const response = await fetch(
-        "http://skillbridge.runasp.net/api/Users/changePassword",
+        "https://skillbridge.runasp.net/api/Users/changePassword",
         {
           method: "POST",
           headers: {

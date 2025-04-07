@@ -23,7 +23,7 @@ const CommunityPage = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('http://skillbridge.runasp.net/api/User/me', {
+      fetch('https://skillbridge.runasp.net/api/User/me', {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
@@ -37,7 +37,7 @@ const CommunityPage = () => {
     if (!courseId) return;
     setIsLoading(true);
     try {
-      const response = await fetch(`http://skillbridge.runasp.net/api/Community/${courseId}`);
+      const response = await fetch(`https://skillbridge.runasp.net/api/Community/${courseId}`);
       if (!response.ok) throw new Error("Failed to fetch community data");
       const newData = await response.json();
       setCommunityData(newData.reverse());
@@ -64,7 +64,7 @@ const CommunityPage = () => {
   const fetchAllComments = useCallback(async (postId) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://skillbridge.runasp.net/api/Community/${postId}/comments`);
+      const response = await fetch(`https://skillbridge.runasp.net/api/Community/${postId}/comments`);
       if (!response.ok) throw new Error("Failed to fetch comments");
       const comments = await response.json();
       setAllComments((prev) => ({ ...prev, [postId]: comments }));
@@ -81,7 +81,7 @@ const CommunityPage = () => {
     if (!token) return;
 
     try {
-      const response = await fetch('http://skillbridge.runasp.net/api/Notifications', {
+      const response = await fetch('https://skillbridge.runasp.net/api/Notifications', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Failed to fetch notifications");
@@ -98,7 +98,7 @@ const CommunityPage = () => {
     if (!token) return;
 
     try {
-      const response = await fetch('http://skillbridge.runasp.net/api/Notifications/markRead', {
+      const response = await fetch('https://skillbridge.runasp.net/api/Notifications/markRead', {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -136,7 +136,7 @@ const CommunityPage = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://skillbridge.runasp.net/api/Community/${courseId}`, {
+      const response = await fetch(`https://skillbridge.runasp.net/api/Community/${courseId}`, {
         method: 'POST',
         body: formData,
         headers: { Authorization: `Bearer ${token}` },
@@ -169,7 +169,7 @@ const CommunityPage = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://skillbridge.runasp.net/api/Community/comment/${postId}`, {
+      const response = await fetch(`https://skillbridge.runasp.net/api/Community/comment/${postId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ const CommunityPage = () => {
       // إرسال إشعار إلى صاحب المشاركة
       const post = communityData.find((p) => p.id === postId);
       if (post && post.userId !== currentUser.id) {
-        await fetch('http://skillbridge.runasp.net/api/Notifications', {
+        await fetch('https://skillbridge.runasp.net/api/Notifications', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -216,7 +216,7 @@ const CommunityPage = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://skillbridge.runasp.net/api/Community/${postId}`, {
+      const response = await fetch(`https://skillbridge.runasp.net/api/Community/${postId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

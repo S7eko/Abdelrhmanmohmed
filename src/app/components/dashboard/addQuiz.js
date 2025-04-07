@@ -26,7 +26,7 @@ const AddQuiz = () => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem("token"); // افترض أن الـ token محفوظ في localStorage
-        const response = await fetch("http://skillbridge.runasp.net/api/Courses/instructor", {
+        const response = await fetch("https://skillbridge.runasp.net/api/Courses/instructor", {
           headers: {
             Authorization: `Bearer ${token}`, // إرسال الـ token في رأس الطلب
           },
@@ -62,7 +62,7 @@ const AddQuiz = () => {
       try {
         const token = localStorage.getItem("token"); // افترض أن الـ token محفوظ في localStorage
         const response = await fetch(
-          `http://skillbridge.runasp.net/api/Courses/sectionsId/${selectedCourseId}`,
+          `https://skillbridge.runasp.net/api/Courses/sectionsId/${selectedCourseId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`, // إرسال الـ token في رأس الطلب
@@ -179,7 +179,7 @@ const AddQuiz = () => {
 
       // إرسال البيانات إلى الـ API
       const response = await fetch(
-        `http://skillbridge.runasp.net/api/Quizzes/${selectedSectionId}/bulk`,
+        `https://skillbridge.runasp.net/api/Quizzes/${selectedSectionId}/bulk`,
         {
           method: "POST",
           headers: {

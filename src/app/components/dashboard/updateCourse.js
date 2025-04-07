@@ -18,7 +18,7 @@ const UpdateCourse = () => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://skillbridge.runasp.net/api/Courses/instructor", {
+        const response = await fetch("https://skillbridge.runasp.net/api/Courses/instructor", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -100,7 +100,7 @@ const UpdateCourse = () => {
         formData.append("Image", image);
       }
 
-      const apiUrl = `http://skillbridge.runasp.net/api/Courses/${selectedCourseId}`;
+      const apiUrl = `https://skillbridge.runasp.net/api/Courses/${selectedCourseId}`;
       const response = await fetch(apiUrl, {
         method: "PUT",
         headers: {

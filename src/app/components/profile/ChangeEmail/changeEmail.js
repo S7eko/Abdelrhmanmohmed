@@ -32,7 +32,7 @@ const ChangeEmail = () => {
 
     try {
       const token = localStorage.getItem("token"); // Get the token from localStorage
-      const response = await fetch("http://skillbridge.runasp.net/api/Users/changeEmail", {
+      const response = await fetch("https://skillbridge.runasp.net/api/Users/changeEmail", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

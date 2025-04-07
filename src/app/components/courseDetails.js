@@ -26,7 +26,7 @@ const CourseDetails = () => {
 
     const fetchCourseDetails = async () => {
       try {
-        const response = await fetch(`http://skillbridge.runasp.net/api/courses/${id}`);
+        const response = await fetch(`https://skillbridge.runasp.net/api/courses/${id}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch course details");
@@ -67,7 +67,7 @@ const CourseDetails = () => {
           return;
         }
 
-        const response = await fetch(`http://skillbridge.runasp.net/api/Courses/${id}/isEnrolled`, {
+        const response = await fetch(`https://skillbridge.runasp.net/api/Courses/${id}/isEnrolled`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -97,7 +97,7 @@ const CourseDetails = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`http://skillbridge.runasp.net/api/Reviews/${id}`);
+        const response = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch reviews");
@@ -123,7 +123,7 @@ const CourseDetails = () => {
       }
 
       try {
-        const response = await fetch(`http://skillbridge.runasp.net/api/Reviews/${id}/hasReviewed`, {
+        const response = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}/hasReviewed`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -163,7 +163,7 @@ const CourseDetails = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://skillbridge.runasp.net/api/Courses/${id}/enroll`, {
+          const response = await fetch(`https://skillbridge.runasp.net/api/Courses/${id}/enroll`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -201,7 +201,7 @@ const CourseDetails = () => {
     }
 
     try {
-      const response = await fetch(`http://skillbridge.runasp.net/api/Reviews/${id}`, {
+      const response = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -224,7 +224,7 @@ const CourseDetails = () => {
       setHasReviewed(true); // تحديث الحالة بعد إضافة المراجعة
 
       // جلب المراجعات المحدثة
-      const reviewsResponse = await fetch(`http://skillbridge.runasp.net/api/Reviews/${id}`);
+      const reviewsResponse = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}`);
       const reviewsData = await reviewsResponse.json();
       setReviews(reviewsData);
     } catch (error) {

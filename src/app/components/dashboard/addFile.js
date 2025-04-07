@@ -23,7 +23,7 @@ const AddFile = () => {
           throw new Error("Authentication token not found");
         }
 
-        const response = await fetch("http://skillbridge.runasp.net/api/Courses/instructor", {
+        const response = await fetch("https://skillbridge.runasp.net/api/Courses/instructor", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -56,7 +56,7 @@ const AddFile = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://skillbridge.runasp.net/api/Courses/sectionsId/${selectedCourseId}`,
+          `https://skillbridge.runasp.net/api/Courses/sectionsId/${selectedCourseId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -142,7 +142,7 @@ const AddFile = () => {
       formData.append("file", file);
 
       // Create progress tracking
-      const xhr = new XMLHttpRequest();
+      const xhr = new XMLhttpsRequest();
 
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
@@ -176,7 +176,7 @@ const AddFile = () => {
           reject(new Error("Network error occurred"));
         };
 
-        xhr.open("POST", `http://skillbridge.runasp.net/api/Files/${selectedSectionId}`);
+        xhr.open("POST", `https://skillbridge.runasp.net/api/Files/${selectedSectionId}`);
         xhr.setRequestHeader("Authorization", `Bearer ${token}`);
         xhr.send(formData);
       });

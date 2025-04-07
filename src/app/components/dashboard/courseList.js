@@ -21,7 +21,7 @@ const CourseList = () => {
       setError(null);
       try {
         const response = await fetch(
-          `http://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
+          `https://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch courses");
@@ -67,7 +67,7 @@ const CourseList = () => {
         throw new Error("يجب تسجيل الدخول أولاً");
       }
 
-      const response = await fetch(`http://skillbridge.runasp.net/api/Courses/${id}`, {
+      const response = await fetch(`https://skillbridge.runasp.net/api/Courses/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +84,7 @@ const CourseList = () => {
       // إعادة تحميل الدورات بعد الحذف
       const fetchNewCourses = async () => {
         const newResponse = await fetch(
-          `http://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
+          `https://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
         );
         const newData = await newResponse.json();
         if (newData.data && Array.isArray(newData.data)) {
@@ -120,7 +120,7 @@ const CourseList = () => {
         <div key={course.id} className={classes.courseItem}>
           <div className={classes.courseInfo}>
             <Image
-              src={course.image || "https://learnify-assets.s3.amazonaws.com/Images/default-course-image.png"}
+              src={course.image || "httpss://learnify-assets.s3.amazonaws.com/Images/default-course-image.png"}
               alt={course.title || "Course Image"}
               className={classes.courseImage}
               width={100}
