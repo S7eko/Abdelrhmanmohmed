@@ -8,15 +8,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
   faBook,
-  faShoppingCart,
-  faHeart,
-  faChalkboardTeacher,
   faBell,
   faEnvelope,
   faCog,
-  faCreditCard,
-  faHistory,
-  faGlobe,
   faUserEdit,
   faQuestionCircle,
   faSignOutAlt,
@@ -153,11 +147,6 @@ const Navbar = () => {
     [handleLogout]
   );
 
-  // دالة للتحقق من نوع المستخدم
-  const isStudent = useMemo(() => {
-    return user?.role === 'Student';
-  }, [user]);
-
   if (isLoading) {
     return (
       <div>
@@ -186,8 +175,8 @@ const Navbar = () => {
               <li>
                 <Link href="/course/allcourse">COURSES</Link>
               </li>
-              {/* إخفاء Dashboard للطلاب فقط */}
-              {!isStudent && (
+              {/* إظهار Dashboard فقط للمستخدمين المسجلين غير الطلاب */}
+              {user && user.role !== 'Student' && (
                 <li>
                   <Link href="/course/dashboard">Dashboard</Link>
                 </li>
