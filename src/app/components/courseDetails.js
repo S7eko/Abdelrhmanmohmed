@@ -8,215 +8,171 @@ import Swal from "sweetalert2";
 import Loader from "./Loader";
 
 const CourseDetails = () => {
-  const [course, setCourse] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isEnrolled, setIsEnrolled] = useState(false);
-  const [reviews, setReviews] = useState([]);
-  const [newReview, setNewReview] = useState("");
-  const [newRating, setNewRating] = useState(5);
-  const [hasReviewed, setHasReviewed] = useState(false); // حالة جديدة
+  // State management
+  const [state, setState] = useState({
+    course: null,
+    isLoading: true,
+    error: null,
+    isEnrolled: false,
+    reviews: [],
+    newReview: "",
+    newRating: 5,
+    hasReviewed: false,
+    enrollmentChecked: false,
+    reviewCheckComplete: false
+  });
 
   const router = useRouter();
   const { id } = useParams();
 
-  // جلب تفاصيل الكورس
-  useEffect(() => {
-    if (!id) return;
+  // API endpoints
+  const API_ENDPOINTS = {
+    courseDetails: `https://skillbridge.runasp.net/api/courses/${id}`,
+    checkEnrollment: `https://skillbridge.runasp.net/api/Courses/${id}/isEnrolled`,
+    enrollCourse: `https://skillbridge.runasp.net/api/Courses/${id}/enroll`,
+    getReviews: `https://skillbridge.runasp.net/api/Reviews/${id}`,
+    checkReview: `https://skillbridge.runasp.net/api/Reviews/${id}/hasReviewed`,
+    submitReview: `https://skillbridge.runasp.net/api/Reviews/${id}`
+  };
 
-    const fetchCourseDetails = async () => {
-      try {
-        const response = await fetch(`https://skillbridge.runasp.net/api/courses/${id}`);
+  // Helper functions
+  const updateState = (newState) => {
+    setState(prev => ({ ...prev, ...newState }));
+  };
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch course details");
-        }
+  const getAuthHeader = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
 
-        const data = await response.json();
-        console.log("Course data fetched:", data);
+  // Data fetching functions
+  const fetchCourseDetails = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.courseDetails);
+      if (!response.ok) throw new Error("Failed to fetch course details");
 
-        if (data) {
-          setCourse(data);
-        } else {
-          throw new Error("Invalid data format");
-        }
-      } catch (error) {
-        console.error("Error fetching course details:", error);
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      const data = await response.json();
+      updateState({ course: data, isLoading: false });
+    } catch (error) {
+      updateState({ error: error.message, isLoading: false });
+    }
+  };
 
-    fetchCourseDetails();
-  }, [id]);
+  const checkEnrollment = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return updateState({ enrollmentChecked: true });
 
-  // التحقق من اشتراك المستخدم في الكورس
-  useEffect(() => {
-    const checkEnrollment = async () => {
-      const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(API_ENDPOINTS.checkEnrollment, {
+        headers: getAuthHeader()
+      });
 
-      if (!token) {
-        setEnrollmentChecked(true);
-        return;
-      }
+      if (!response.ok) throw new Error("Failed to check enrollment");
 
-      try {
-        // أولاً: التحقق من حالة التسجيل من الخادم مباشرة
-        const response = await fetch(`https://skillbridge.runasp.net/api/Courses/${id}/isEnrolled`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to check enrollment");
-        }
-
-        // هنا نعتبر أن الاستجابة هي true/false مباشرة
-        const isEnrolled = await response.json();
-        setIsEnrolled(isEnrolled);
-
-        // تحديث localStorage للحفاظ على الحالة محلياً
-        if (isEnrolled) {
-          const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
-          enrolledCourses[id] = true;
-          localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
-        }
-      } catch (error) {
-        console.error("Error checking enrollment:", error);
-
-        // كحالة احتياطية، نتحقق من localStorage إذا فشل الاتصال بالخادم
+      const isEnrolled = await response.json();
+      if (isEnrolled) {
         const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
-        if (enrolledCourses[id]) {
-          setIsEnrolled(true);
-        }
-      } finally {
-        setEnrollmentChecked(true);
+        enrolledCourses[id] = true;
+        localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
       }
-    };
+      updateState({ isEnrolled, enrollmentChecked: true });
+    } catch (error) {
+      const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
+      updateState({
+        isEnrolled: enrolledCourses[id] || false,
+        enrollmentChecked: true
+      });
+    }
+  };
 
-    checkEnrollment();
-  }, [id]);
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.getReviews);
+      if (!response.ok) throw new Error("Failed to fetch reviews");
 
-  // جلب المراجعات الحالية
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}`);
+      const data = await response.json();
+      updateState({ reviews: data });
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch reviews");
-        }
+  const checkIfReviewed = async () => {
+    const token = localStorage.getItem("token");
+    if (!token || !state.isEnrolled) return updateState({ reviewCheckComplete: true });
 
-        const data = await response.json();
-        setReviews(data);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      }
-    };
+    try {
+      const response = await fetch(API_ENDPOINTS.checkReview, {
+        headers: getAuthHeader()
+      });
 
-    fetchReviews();
-  }, [id]);
+      if (!response.ok) throw new Error("Failed to check if reviewed");
 
-  // التحقق مما إذا كان المستخدم قد قام بمراجعة الكورس
-  useEffect(() => {
-    const checkIfReviewed = async () => {
-      const token = localStorage.getItem("token");
+      const hasReviewedResponse = await response.json();
+      updateState({ hasReviewed: hasReviewedResponse, reviewCheckComplete: true });
+    } catch (error) {
+      console.error("Error checking if reviewed:", error);
+      updateState({ reviewCheckComplete: true });
+    }
+  };
 
-      if (!token) {
-        return;
-      }
-
-      try {
-        const response = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}/hasReviewed`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to check if reviewed");
-        }
-
-        const data = await response.json();
-        setHasReviewed(data.hasReviewed); // تحديث الحالة بناءً على الاستجابة
-      } catch (error) {
-        console.error("Error checking if reviewed:", error);
-      }
-    };
-
-    checkIfReviewed();
-  }, [id]);
-
-  // معالجة عملية التسجيل في الكورس
+  // Event handlers
   const handlePurchase = async () => {
     const token = localStorage.getItem("token");
-
     if (!token) {
-      setError("You need to be logged in to purchase the course.");
       Swal.fire("Error", "You need to be logged in to purchase the course.", "error");
-      return;
+      return updateState({ error: "You need to be logged in to purchase the course." });
     }
 
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "Do you want to enroll in this course?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, enroll!",
       cancelButtonText: "No, cancel",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await fetch(`https://skillbridge.runasp.net/api/Courses/${id}/enroll`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to enroll in the course");
-          }
-
-          Swal.fire("Success!", "Course enrolled successfully!", "success");
-          setIsEnrolled(true);
-
-          const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
-          enrolledCourses[id] = true;
-          localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
-        } catch (error) {
-          console.error("Error enrolling in the course:", error);
-          setError("Failed to enroll in the course");
-          Swal.fire("Error", error.message, "error");
-        }
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(API_ENDPOINTS.enrollCourse, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeader()
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to enroll in the course");
+        }
+
+        Swal.fire("Success!", "Course enrolled successfully!", "success");
+        const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "{}");
+        enrolledCourses[id] = true;
+        localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+        updateState({ isEnrolled: true });
+      } catch (error) {
+        Swal.fire("Error", error.message, "error");
+      }
+    }
   };
 
-  // إضافة مراجعة جديدة
   const handleAddReview = async () => {
     const token = localStorage.getItem("token");
-
-    if (!token) {
-      Swal.fire("Error", "You need to be logged in to add a review.", "error");
-      return;
-    }
+    if (!token) return Swal.fire("Error", "You need to be logged in to add a review.", "error");
 
     try {
-      const response = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}`, {
+      const response = await fetch(API_ENDPOINTS.submitReview, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          ...getAuthHeader()
         },
         body: JSON.stringify({
-          review: newReview,
-          rating: newRating,
+          review: state.newReview,
+          rating: state.newRating,
         }),
       });
 
@@ -226,77 +182,76 @@ const CourseDetails = () => {
       }
 
       Swal.fire("Success!", "Review added successfully!", "success");
-      setNewReview("");
-      setNewRating(5);
-      setHasReviewed(true); // تحديث الحالة بعد إضافة المراجعة
-
-      // جلب المراجعات المحدثة
-      const reviewsResponse = await fetch(`https://skillbridge.runasp.net/api/Reviews/${id}`);
-      const reviewsData = await reviewsResponse.json();
-      setReviews(reviewsData);
+      const reviewsData = await fetch(API_ENDPOINTS.getReviews).then(res => res.json());
+      updateState({
+        newReview: "",
+        newRating: 5,
+        hasReviewed: true,
+        reviews: reviewsData
+      });
     } catch (error) {
-      console.error("Error adding review:", error);
       Swal.fire("Error", error.message, "error");
     }
   };
 
-  if (isLoading) return <div><Loader /></div>;
-  if (error) return <div>Error: {error}</div>;
+  // Effects
+  useEffect(() => {
+    if (!id) return;
+    fetchCourseDetails();
+  }, [id]);
+
+  useEffect(() => {
+    checkEnrollment();
+  }, [id]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [id, state.hasReviewed]);
+
+  useEffect(() => {
+    if (state.enrollmentChecked) {
+      checkIfReviewed();
+    }
+  }, [id, state.isEnrolled, state.enrollmentChecked]);
+
+  // Render
+  if (state.isLoading) return <div><Loader /></div>;
+  if (state.error) return <div>Error: {state.error}</div>;
 
   return (
     <div className={classes.courseDetails}>
-      {course ? (
+      {state.course ? (
         <>
-          {/* قسم تفاصيل الكورس */}
+          {/* Course details section */}
           <div className={classes.courseDetails_image}>
-            <Image src={course.image} alt={course.title} width={500} height={300} />
+            <Image
+              src={state.course.image}
+              alt={state.course.title}
+              width={500}
+              height={300}
+            />
           </div>
+
           <div className={classes.courseDetails_info}>
-            {/* Course Image */}
-
-
-            {/* Course Title & Subtitle */}
-            <h1>
-              <strong>Title:</strong> {course.title}
-            </h1>
-            {course.subTitle && (
+            <h1><strong>Title:</strong> {state.course.title}</h1>
+            {state.course.subTitle && (
               <h2 style={{ fontWeight: 'normal', fontStyle: 'italic', color: '#666' }}>
-                {course.subTitle}
+                {state.course.subTitle}
               </h2>
             )}
 
-            {/* Course Description */}
-            <p>
-              <strong>Description:</strong> {course.description}
-            </p>
+            <p><strong>Description:</strong> {state.course.description}</p>
+            <p><strong>Instructor:</strong> {state.course.instructor}</p>
+            <p><strong>Level:</strong> {state.course.level}</p>
+            <p><strong>Category:</strong> {state.course.category}</p>
+            <p><strong>Language:</strong> {state.course.language}</p>
+            <p><strong>Rating:</strong> {state.course.rating}</p>
+            <p><strong>Students:</strong> {state.course.students}</p>
 
-            {/* Instructor Info */}
-            <p>
-              <strong>Instructor:</strong> {course.instructor}
-            </p>
-
-            {/* Other Course Details */}
-            <p>
-              <strong>Level:</strong> {course.level}
-            </p>
-            <p>
-              <strong>Category:</strong> {course.category}
-            </p>
-            <p>
-              <strong>Language:</strong> {course.language}
-            </p>
-            <p>
-              <strong>Rating:</strong> {course.rating}
-            </p>
-            <p>
-              <strong>Students:</strong> {course.students}
-            </p>
-
-            {/* Last Updated */}
             <p>
               <strong>Last Updated:</strong>{" "}
-              {course.lastUpdated
-                ? new Date(course.lastUpdated).toLocaleDateString("en-US", {
+              {state.course.lastUpdated
+                ? new Date(state.course.lastUpdated).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -304,13 +259,10 @@ const CourseDetails = () => {
                 : "N/A"}
             </p>
 
-            {/* Requirements */}
-            <p>
-              <strong>Requirements:</strong>
-            </p>
+            <p><strong>Requirements:</strong></p>
             <ul>
-              {course.requirements?.length > 0 ? (
-                course.requirements.map((req, index) => (
+              {state.course.requirements?.length > 0 ? (
+                state.course.requirements.map((req, index) => (
                   <li key={index}>{req.name}</li>
                 ))
               ) : (
@@ -318,13 +270,10 @@ const CourseDetails = () => {
               )}
             </ul>
 
-            {/* Learnings */}
-            <p>
-              <strong>What You Will Learn:</strong>
-            </p>
+            <p><strong>What You Will Learn:</strong></p>
             <ul>
-              {course.learnings?.length > 0 ? (
-                course.learnings.map((learn, index) => (
+              {state.course.learnings?.length > 0 ? (
+                state.course.learnings.map((learn, index) => (
                   <li key={index}>{learn.name}</li>
                 ))
               ) : (
@@ -333,43 +282,38 @@ const CourseDetails = () => {
             </ul>
           </div>
 
-
-          {/* قسم المراجعات */}
+          {/* Reviews section */}
           <div className={classes.reviewsSection}>
             <h2>Reviews</h2>
-            {reviews.length === 0 ? (
+            {state.reviews.length === 0 ? (
               <p>No reviews yet. Be the first to review this course!</p>
             ) : (
-              reviews.map((review, index) => (
+              state.reviews.map((review, index) => (
                 <div key={index} className={classes.reviewItem}>
-                  <p>
-                    <strong>{review.userName}</strong> - Rating: {review.rating}/5
-                  </p>
+                  <p><strong>{review.userName}</strong> - Rating: {review.rating}/5</p>
                   <p>{review.review}</p>
                 </div>
               ))
             )}
 
-            {/* نموذج إضافة مراجعة جديدة */}
-            {isEnrolled && !hasReviewed && (
+            {/* Review form */}
+            {state.isEnrolled && !state.hasReviewed && state.reviewCheckComplete && (
               <div className={classes.addReviewForm}>
                 <h3>Add a Review</h3>
                 <textarea
-                  value={newReview}
-                  onChange={(e) => setNewReview(e.target.value)}
+                  value={state.newReview}
+                  onChange={(e) => updateState({ newReview: e.target.value })}
                   placeholder="Write your review..."
                   className={classes.reviewTextarea}
                 />
                 <div className={classes.ratingInput}>
                   <label>Rating:</label>
                   <select
-                    value={newRating}
-                    onChange={(e) => setNewRating(Number(e.target.value))}
+                    value={state.newRating}
+                    onChange={(e) => updateState({ newRating: Number(e.target.value) })}
                   >
                     {[1, 2, 3, 4, 5].map((num) => (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
+                      <option key={num} value={num}>{num}</option>
                     ))}
                   </select>
                 </div>
@@ -380,9 +324,9 @@ const CourseDetails = () => {
             )}
           </div>
 
-          {/* زر التسجيل أو الاستمرار */}
+          {/* Action buttons */}
           <div className={classes.courseDetails_button}>
-            {!isEnrolled ? (
+            {!state.isEnrolled ? (
               <button className={classes.btn} onClick={handlePurchase}>
                 Enroll in COURSE
               </button>
@@ -411,4 +355,4 @@ const CourseDetails = () => {
   );
 };
 
-export default CourseDetails;
+export default CourseDetails; 
