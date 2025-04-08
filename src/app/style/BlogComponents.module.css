@@ -1,0 +1,275 @@
+/* BlogComponents.module.css */
+.blogContainer {
+  max-width: 1200px;
+  margin: 70px auto;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.blogHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.blogHeader h1 {
+  font-size: 2.5rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.blogHeader p {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-bottom: 2rem;
+}
+
+.searchBar {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.searchBar input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 3rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.searchBar input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a0aec0;
+  font-size: 1.2rem;
+}
+
+.categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.categories button {
+  padding: 0.6rem 1.2rem;
+  background-color: #edf2f7;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.categories button:hover {
+  background-color: #e2e8f0;
+}
+
+.categories button.active {
+  background-color: #4299e1;
+  color: white;
+}
+
+.articlesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.articleCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s;
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.articleCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.articleImage {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.articleImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.articleCard:hover .articleImage img {
+  transform: scale(1.05);
+}
+
+.categoryTag {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #4299e1;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.articleContent {
+  padding: 1.5rem;
+}
+
+.articleContent h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  color: #2d3748;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.excerpt {
+  color: #4a5568;
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.metaInfo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #718096;
+  margin-bottom: 1.5rem;
+}
+
+.author {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.separator {
+  color: #cbd5e0;
+}
+
+.articleActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-top: 1px solid #edf2f7;
+  padding-top: 1.2rem;
+}
+
+.articleActions button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #718096;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+}
+
+.articleActions button:hover {
+  background-color: #f7fafc;
+}
+
+.likeButton:hover, .liked {
+  color: #e53e3e !important;
+}
+
+.liked {
+  color: #e53e3e;
+}
+
+.saved {
+  color: #f6ad55;
+}
+
+.loadMore {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.loadMore button {
+  padding: 0.8rem 2rem;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.loadMore button:hover {
+  background-color: #3182ce;
+}
+
+.noResults {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.noResults img {
+  max-width: 300px;
+  margin-bottom: 1.5rem;
+}
+
+.noResults h3 {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.noResults p {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+/* تصميم متجاوب */
+@media (max-width: 768px) {
+  .articlesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .blogHeader h1 {
+    font-size: 2rem;
+  }
+  
+  .categories {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .categories button {
+    white-space: nowrap;
+  }
+}

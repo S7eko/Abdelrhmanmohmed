@@ -175,6 +175,9 @@ const Navbar = () => {
               <li>
                 <Link href="/course/allcourse">COURSES</Link>
               </li>
+              <li>
+                <Link href="/course/blog">BLOG</Link>
+              </li>
               {/* إظهار Dashboard فقط للمستخدمين المسجلين غير الطلاب */}
               {user && user.role !== 'Student' && (
                 <li>

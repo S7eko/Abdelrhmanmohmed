@@ -24,7 +24,7 @@ const Chatbot = () => {
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer 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", // استبدل بـ API Key الخاص بك
+          "Authorization": "OPENAI_API_KEY=your_api_key_here", // استبدل بـ API Key الخاص بك
           "HTTP-Referer": "https://www.sitename.com", // Optional. Site URL for rankings on openrouter.ai.
           "X-Title": "SiteName", // Optional. Site title for rankings on openrouter.ai.
           "Content-Type": "application/json"
