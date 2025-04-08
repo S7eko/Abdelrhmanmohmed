@@ -170,7 +170,7 @@ const Navbar = () => {
                 <Link href="/">HOME</Link>
               </li>
               <li>
-                <Link href="/course/about">About Us</Link>
+                <Link href="/course/about">ABOUT US</Link>
               </li>
               <li>
                 <Link href="/course/allcourse">COURSES</Link>
@@ -181,7 +181,7 @@ const Navbar = () => {
               {/* إظهار Dashboard فقط للمستخدمين المسجلين غير الطلاب */}
               {user && user.role !== 'Student' && (
                 <li>
-                  <Link href="/course/dashboard">Dashboard</Link>
+                  <Link href="/course/dashboard">DASHBOARD</Link>
                 </li>
               )}
               <li ref={notificationsRef}>

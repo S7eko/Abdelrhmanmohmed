@@ -95,6 +95,7 @@ const Courses = () => {
                     onClick={() => handleCategoryClick(category.name)}
                     className={categoryFilter === category.name ? classes.active : ""}
                   >
+                    
                     {category.name}
                   </a>
                 ))
