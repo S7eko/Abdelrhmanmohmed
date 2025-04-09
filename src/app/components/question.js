@@ -47,7 +47,7 @@ const Question = () => {
       <div className={classes.question}>
         <div className={classes.question_left}>
           <h2>Frequently Asked Questions</h2>
-          <p>If you have any questions or need assistance, feel free to reach out to us at 01157237318.</p>
+          <p>If you have any questions or need assistance, feel free to reach out to us at support@courses.com.</p>
         </div>
         <div className={classes.question_right}>
           {questions.map((question) => (

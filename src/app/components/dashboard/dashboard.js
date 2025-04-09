@@ -42,10 +42,10 @@ const Dashboard = () => {
       <div className={classes.content}>
         <div className={classes.dashboard_left}>
           <div className={classes.logo}>
-            <h1>Admin Dashboard</h1>
+            <h1>SkillVerse Dashboard</h1>
           </div>
           <div className={classes.navbar_dashboard}>
-            <h2>Admin</h2>
+            <h2>Dashboard</h2>
             <ul>
               <li onClick={handleAddCourseClick}>
                 <FontAwesomeIcon icon={faPlus} width={20} height={20} />
