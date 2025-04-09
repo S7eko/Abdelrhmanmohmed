@@ -18,9 +18,9 @@ const Video = () => {
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
   const [downloadingFile, setDownloadingFile] = useState(null);
   const [hasVideoError, setHasVideoError] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   // Constants
   const API_BASE_URL = "https://skillbridge.runasp.net";
@@ -30,9 +30,6 @@ const Video = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const courseId = searchParams.get("id");
-
-  // Function to ensure progress never exceeds 100%
-  const getSafeProgress = (progressValue) => Math.min(progressValue, 100);
 
   // Fetch course details and sections
   useEffect(() => {
@@ -62,8 +59,39 @@ const Video = () => {
             return;
           }
 
-          // Fetch sections with progress from backend
-          await fetchSectionsWithProgress(token);
+          // Fetch sections with progress
+          const sectionsResponse = await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!sectionsResponse.ok) {
+            throw new Error("Failed to fetch sections");
+          }
+
+          const sectionsData = await sectionsResponse.json();
+
+          // Update progress state
+          if (sectionsData.progress !== undefined) {
+            setProgress(sectionsData.progress);
+          }
+
+          if (sectionsData.sections && Array.isArray(sectionsData.sections)) {
+            const updatedSections = sectionsData.sections.map((section) => ({
+              ...section,
+              lectures: section.lectures?.map((lecture) => ({
+                ...lecture,
+                completed: localStorage.getItem(`lecture-${lecture.id}-completed`) === "true",
+              })) || [],
+              pdfFiles: section.pdfFiles || [],
+              quizzes: section.quizzes || []
+            }));
+
+            setSections(updatedSections);
+          } else {
+            setSections([]);
+          }
         } catch (error) {
           console.error("Error fetching data:", error);
           Swal.fire({
@@ -89,30 +117,6 @@ const Video = () => {
       });
     }
   }, [courseId, router]);
-
-  // Function to fetch sections with progress
-  const fetchSectionsWithProgress = async (token) => {
-    const sectionsResponse = await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!sectionsResponse.ok) {
-      throw new Error("Failed to fetch sections");
-    }
-
-    const sectionsData = await sectionsResponse.json();
-
-    if (sectionsData.sections && Array.isArray(sectionsData.sections)) {
-      setSections(sectionsData.sections);
-      // Ensure progress doesn't exceed 100%
-      setProgress(getSafeProgress(sectionsData.progress || 0));
-    } else {
-      setSections([]);
-      setProgress(0);
-    }
-  };
 
   // Handle PDF download
   const handlePdfDownload = (pdfFile) => {
@@ -160,7 +164,7 @@ const Video = () => {
     }
   };
 
-  // Mark lecture as done and refetch sections to get updated progress from backend
+  // Mark lecture as done
   const markLectureAsDone = async (lectureId) => {
     try {
       const token = localStorage.getItem("token");
@@ -169,8 +173,7 @@ const Video = () => {
         return;
       }
 
-      // Mark lecture as done
-      const markDoneResponse = await fetch(`${API_BASE_URL}/api/Lectures/${lectureId}/markDone`, {
+      await fetch(`${API_BASE_URL}/api/Lectures/${lectureId}/markDone`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -178,15 +181,48 @@ const Video = () => {
         },
       });
 
-      if (!markDoneResponse.ok) {
+      // Fetch updated sections and progress from backend
+      const sectionsResponse = await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!sectionsResponse.ok) {
+        throw new Error("Failed to fetch updated sections");
       }
 
-      // Refetch sections to get updated progress from backend
-      await fetchSectionsWithProgress(token);
+      const sectionsData = await sectionsResponse.json();
 
-     
+      // Update progress state
+      if (sectionsData.progress !== undefined) {
+        setProgress(sectionsData.progress);
+
+        // Show completion message if progress reaches 100%
+        if (sectionsData.progress === 100) {
+          Swal.fire({
+            title: "Congratulations!",
+            text: "You've completed this course!",
+            icon: "success"
+          });
+        }
+      }
+
+      if (sectionsData.sections && Array.isArray(sectionsData.sections)) {
+        const updatedSections = sectionsData.sections.map((section) => ({
+          ...section,
+          lectures: section.lectures?.map((lecture) => ({
+            ...lecture,
+            completed: lecture.id === lectureId ? true : localStorage.getItem(`lecture-${lecture.id}-completed`) === "true",
+          })) || [],
+          pdfFiles: section.pdfFiles || [],
+          quizzes: section.quizzes || []
+        }));
+
+        setSections(updatedSections);
+      }
     } catch (error) {
-     
+      console.error("Error marking lecture as done:", error);
     }
   };
 
@@ -194,71 +230,66 @@ const Video = () => {
   const handleQuizSelect = (quizzes) => {
     setSelectedQuiz(quizzes);
     setShowQuiz(true);
-    setSelectedVideoUrl("");
     setUserAnswers({});
     setShowResults(false);
+    setSelectedVideoUrl("");
   };
 
   // Handle answer selection
   const handleAnswerSelect = (questionId, answer) => {
-    setUserAnswers(prev => ({
-      ...prev,
-      [questionId]: answer
+    setUserAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [questionId]: answer,
     }));
   };
 
-  // Handle submit answers
+  // Handle quiz submission
   const handleSubmitAnswers = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        Swal.fire("Error", "You need to be logged in to submit quiz answers.", "error");
-        return;
+    if (!selectedQuiz) return;
+
+    let correctAnswers = 0;
+    selectedQuiz.forEach((quiz) => {
+      if (userAnswers[quiz.id] === quiz.answer) {
+        correctAnswers++;
       }
+    });
 
-      // Calculate score
-      const correctAnswers = selectedQuiz.filter(
-        quiz => userAnswers[quiz.id] === quiz.answer
-      ).length;
-      const score = Math.round((correctAnswers / selectedQuiz.length) * 100);
+    const resultMessage = `You answered ${correctAnswers} out of ${selectedQuiz.length} questions correctly!`;
 
-      // Submit quiz results to backend
-      const submitResponse = await fetch(`${API_BASE_URL}/api/Quizzes/submit`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          courseId,
-          score
-        }),
-      });
+    Swal.fire({
+      icon: "success",
+      title: "Quiz Results",
+      text: resultMessage,
+    });
 
-      if (!submitResponse.ok) {
-        throw new Error("Failed to submit quiz results");
+    setShowResults(true);
+
+    // Mark quiz as completed if all answers are correct
+    if (correctAnswers === selectedQuiz.length) {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        // Fetch updated progress after quiz completion
+        const sectionsResponse = await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (sectionsResponse.ok) {
+          const sectionsData = await sectionsResponse.json();
+          if (sectionsData.progress !== undefined) {
+            setProgress(sectionsData.progress);
+          }
+        }
+      } catch (error) {
+        console.error("Error updating progress after quiz:", error);
       }
-
-      // Refetch sections to get updated progress from backend
-      await fetchSectionsWithProgress(token);
-
-      setShowResults(true);
-      Swal.fire({
-        title: "Quiz Submitted!",
-        text: `Your score: ${score}%`,
-        icon: "success"
-      });
-    } catch (error) {
-      console.error("Error submitting quiz:", error);
-      Swal.fire({
-        title: "Submission Error",
-        text: "Failed to submit quiz. Please try again.",
-        icon: "error"
-      });
     }
   };
 
-  // Handle login redirect
+  // Redirect to login
   const handleLogin = () => {
     router.push("/login");
   };
@@ -292,17 +323,22 @@ const Video = () => {
         </div>
       ) : (
         <div>
-          <div className={styles.container}>
-            <div className={styles.moduleList}>
-              <div className={styles.header}>
-                <h2>Overall Progress: {getSafeProgress(progress)}%</h2>
-                <div className={styles.progressContainer}>
-                  <div
-                    className={styles.progressBar}
-                    style={{ width: `${getSafeProgress(progress)}%` }}
-                  ></div>
+          {/* Progress Bar Section */}
+          
+            
+
+            <div className={styles.container}>
+              
+              <div className={styles.moduleList}>
+                <div className={styles.progressSection}>
+                  <div className={styles.progressContainer}>
+                    <div
+                      className={styles.progressFill}
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <span className={styles.progressText}>{progress}% Complete</span>
                 </div>
-              </div>
               {sections.length === 0 ? (
                 <p>No sections available for this course.</p>
               ) : (
@@ -322,7 +358,11 @@ const Video = () => {
                               <FontAwesomeIcon icon={faCirclePlay} />
                             </span>
                             <strong>{lecture.title}</strong>
-                            {lecture.completed && <span className={styles.completedBadge}>Completed</span>}
+                            {lecture.completed && (
+                              <span className={styles.completedBadge}>
+                                <FontAwesomeIcon icon={faCheckCircle} /> Completed
+                              </span>
+                            )}
                           </li>
                         ))}
                       </ul>
