@@ -19,11 +19,8 @@ const Main = () => {
             <span>you achieve your dreams in the field of technology.</span>
           </p>
           <div className={classes.main_left_text_button}>
-            <Link href="/course/signUp" className={classes.btn}>Get Started</Link>
-            <Link href="/course/allcourse" className={classes.Link}>
-              View Learning Path
-              <FontAwesomeIcon className={classes.icon} icon={faArrowRight} />
-            </Link>
+            <Link href="/course/allcourse" className={classes.btn}>Get Started</Link>
+            
           </div>
         </div>
         <div className={classes.main_right}>

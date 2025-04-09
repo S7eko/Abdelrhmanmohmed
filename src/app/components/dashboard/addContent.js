@@ -8,30 +8,25 @@ const AddContent = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [sections, setSections] = useState([{ sectionName: "", lectures: [{ lectureName: "", videoFile: null }] }]);
+  const [formKey, setFormKey] = useState(0); // المفتاح لإعادة تحميل الفورم
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("Authentication token is missing");
-        }
+        if (!token) throw new Error("Authentication token is missing");
 
         const response = await fetch("https://skillbridge.runasp.net/api/Courses/instructor", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch courses: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Failed to fetch courses: ${response.statusText}`);
 
         const data = await response.json();
-        console.log("API Response:", data); // Debugging
         if (Array.isArray(data)) {
           setCourses(data);
         } else if (data && Array.isArray(data.data)) {
@@ -49,9 +44,31 @@ const AddContent = () => {
     fetchCourses();
   }, []);
 
-  const handleCourseChange = (e) => {
-    setSelectedCourse(e.target.value);
+  const resetForm = () => {
+    setSelectedCourse("");
+    setSections([{ sectionName: "", lectures: [{ lectureName: "", videoFile: null }] }]);
+    setUploadProgress(0);
+    setFormKey(prev => prev + 1); // إعادة رسم الفورم
   };
+
+  const handleCancel = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to cancel and reset the form?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, reset it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        resetForm();
+        Swal.fire('Reset!', 'The form has been reset.', 'success');
+      }
+    });
+  };
+
+  const handleCourseChange = (e) => setSelectedCourse(e.target.value);
 
   const handleSectionNameChange = (index, value) => {
     const updatedSections = [...sections];
@@ -73,26 +90,21 @@ const AddContent = () => {
 
   const handleSave = async () => {
     if (!selectedCourse) {
-      Swal.fire({
-        icon: "warning",
-        title: "Warning",
-        text: "Please select a course",
-      });
+      Swal.fire({ icon: "warning", title: "Warning", text: "Please select a course" });
       return;
     }
 
     setIsSubmitting(true);
+    setUploadProgress(0);
 
     try {
       const token = localStorage.getItem("token");
+      let totalSections = sections.length;
+      let completedSections = 0;
 
       for (const section of sections) {
         if (!section.sectionName.trim()) {
-          Swal.fire({
-            icon: "warning",
-            title: "Warning",
-            text: "Please enter section name",
-          });
+          Swal.fire({ icon: "warning", title: "Warning", text: "Please enter section name" });
           setIsSubmitting(false);
           return;
         }
@@ -107,40 +119,32 @@ const AddContent = () => {
           }
         });
 
-        const response = await fetch(
-          `https://skillbridge.runasp.net/api/Sections/${selectedCourse}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: formData,
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            const sectionProgress = (event.loaded / event.total) * 100;
+            const overallProgress = (completedSections / totalSections) * 100 + (sectionProgress / totalSections);
+            setUploadProgress(Math.round(overallProgress));
           }
-        );
+        });
 
-        const result = await response.text();
-        console.log("API Response:", result);
+        await new Promise((resolve, reject) => {
+          xhr.open("POST", `https://skillbridge.runasp.net/api/Sections/${selectedCourse}`);
+          xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+          xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve(xhr.response) : reject(xhr.statusText));
+          xhr.onerror = () => reject(xhr.statusText);
+          xhr.send(formData);
+        });
 
-        if (!response.ok) {
-          throw new Error(result || "Failed to save content");
-        }
+        completedSections++;
+        setUploadProgress((completedSections / totalSections) * 100);
       }
 
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Content saved successfully!",
-      });
-
-      setSelectedCourse("");
-      setSections([{ sectionName: "", lectures: [{ lectureName: "", videoFile: null }] }]);
+      Swal.fire({ icon: "success", title: "Success", text: "Content saved successfully!" });
+      resetForm();
     } catch (error) {
       console.error("Save Error:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `Failed to save content: ${error.message}`,
-      });
+      Swal.fire({ icon: "error", title: "Error", text: `Failed to save content: ${error}` });
     } finally {
       setIsSubmitting(false);
     }
@@ -150,7 +154,7 @@ const AddContent = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} key={formKey}>
       <div className={classes.form}>
         <div className={classes.SelectCourse}>
           <label>Select Course:</label>
@@ -196,11 +200,14 @@ const AddContent = () => {
 
         <div className={classes.button}>
           <button className={classes.btn1} onClick={handleSave} disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save"}
+            <div className={classes.progressContainer}>
+              <div className={classes.progressBar} style={{ width: `${uploadProgress}%` }}></div>
+              <span className={classes.progressText}>
+                {isSubmitting ? `${uploadProgress}% Uploading...` : "Save"}
+              </span>
+            </div>
           </button>
-          <button className={classes.btn2} onClick={() => setSections([{ sectionName: "", lectures: [{ lectureName: "", videoFile: null }] }])}>
-            Cancel
-          </button>
+          <button className={classes.btn2} onClick={handleCancel}>Cancel</button>
         </div>
       </div>
     </div>
