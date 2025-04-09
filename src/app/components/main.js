@@ -3,6 +3,7 @@ import classes from "../style/header.module.css";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 const Main = () => {
   return (
@@ -18,11 +19,11 @@ const Main = () => {
             <span>you achieve your dreams in the field of technology.</span>
           </p>
           <div className={classes.main_left_text_button}>
-            <button className={classes.btn}>Get Started</button>
-            <a className={classes.Link}>
+            <Link href="/course/signUp" className={classes.btn}>Get Started</Link>
+            <Link href="/course/allcourse" className={classes.Link}>
               View Learning Path
               <FontAwesomeIcon className={classes.icon} icon={faArrowRight} />
-            </a>
+            </Link>
           </div>
         </div>
         <div className={classes.main_right}>

@@ -17,17 +17,20 @@ const Courses = () => {
   const [page, setPage] = useState(1);
   const [totalCourses, setTotalCourses] = useState(0);
   const [pageSize] = useState(6);
-  const [categoryFilter, setCategoryFilter] = useState(""); // إضافة فلاتر الفئات
-  const [categories, setCategories] = useState([]); // إضافة حالة لتخزين الفئات
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [categories, setCategories] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
-    // جلب الكورسات والفئات من الـ API
     const fetchCourses = async () => {
+      setIsLoading(true);
       try {
-        const courseResponse = await fetch(
-          `https://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
-        );
+        let url = `https://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`;
+        if (searchQuery) {
+          url += `&Search=${searchQuery}`;
+        }
+
+        const courseResponse = await fetch(url);
         const categoryResponse = await fetch(`https://skillbridge.runasp.net/api/categories`);
 
         if (!courseResponse.ok || !categoryResponse.ok) {
@@ -43,9 +46,8 @@ const Courses = () => {
         }
 
         if (categoryData) {
-          setCategories(categoryData); // تخزين الفئات في حالة
+          setCategories(categoryData);
         }
-
       } catch (error) {
         setError(error.message);
       } finally {
@@ -54,24 +56,21 @@ const Courses = () => {
     };
 
     fetchCourses();
-  }, [page, pageSize]);
+  }, [page, pageSize, searchQuery]);
 
   const totalPages = Math.ceil(totalCourses / pageSize);
 
-  // تصفية الكورسات بناءً على البحث والفئة المحددة
-  const filteredCourses = searchQuery
-    ? courses.filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    : categoryFilter
+  const filteredCourses = categoryFilter
     ? courses.filter((item) => item.category.toLowerCase() === categoryFilter.toLowerCase())
     : courses;
 
   const handleCategoryClick = (category) => {
     setCategoryFilter(category);
-    setSearchQuery(""); // إعادة تعيين استعلام البحث عند اختيار فئة
+    setSearchQuery("");
   };
 
   const handleCourseClick = (id) => {
-    router.push(`/course/${id}`); // التنقل إلى صفحة تفاصيل الكورس
+    router.push(`/course/${id}`);
   };
 
   return (
@@ -95,7 +94,6 @@ const Courses = () => {
                     onClick={() => handleCategoryClick(category.name)}
                     className={categoryFilter === category.name ? classes.active : ""}
                   >
-                    
                     {category.name}
                   </a>
                 ))
@@ -115,14 +113,13 @@ const Courses = () => {
                   <div
                     key={item.id}
                     className={classes.recommendations_Card_item}
-                    onClick={() => handleCourseClick(item.id)} // عند الضغط على الكورس
+                    onClick={() => handleCourseClick(item.id)}
                   >
                     <div className={classes.recommendations_Card_item_image}>
                       <Image src={item.image} alt={item.title} loading="lazy" width={380} height={230} />
                       <div className={classes.recommendations_Card_item_star}>
                         <a className={classes.star} href="">
-                          <FontAwesomeIcon color="#FCD980" icon={faStar} width={15} height={15} />{" "}
-                          {item.rating}
+                          <FontAwesomeIcon color="#FCD980" icon={faStar} width={15} height={15} /> {item.rating}
                         </a>
                       </div>
                     </div>
@@ -142,7 +139,6 @@ const Courses = () => {
                       </div>
                       <div className={classes.recommendations_Card_item_price}>
                         <p>Instructor: {item.instructor}</p>
-                        <p>Price:Free</p>
                       </div>
                     </div>
                   </div>
@@ -158,7 +154,7 @@ const Courses = () => {
           <button onClick={() => setPage((prevPage) => Math.max(prevPage - 1, 1))} disabled={page === 1}>
             Previous
           </button>
-
+          <span>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage((prevPage) => Math.min(prevPage + 1, totalPages))}
             disabled={page === totalPages}

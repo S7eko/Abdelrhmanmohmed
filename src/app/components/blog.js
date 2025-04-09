@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import Container from "./container";
+import Link from "next/link";
 
 const Blog = () => {
   const blog = [
@@ -39,10 +40,10 @@ const Blog = () => {
         <div className={classes.blog_container}>
           <div className={classes.blog_header}>
             <h3>Blog, News, and Events</h3>
-            <a href="">
+          <Link href="/course/blog">
               View All
               <FontAwesomeIcon className={classes.icon} icon={faArrowRight} width={20} height={20} />
-            </a>
+            </Link>
         </div>
           <div className={classes.blog_content}>
             <div className={classes.blog_Card}>

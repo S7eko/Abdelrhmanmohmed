@@ -135,13 +135,8 @@ const Navbar = () => {
 
   const menuItems = useMemo(
     () => [
-      { text: "My learning", icon: faBook },
-      { text: "Notifications", icon: faBell },
-      { text: "Messages", icon: faEnvelope },
-      { text: "Account settings", icon: faCog },
-      { text: "Public profile", icon: faUser },
+      
       { text: "Edit profile", href: "/course/profile", icon: faUserEdit },
-      { text: "Help and Support", icon: faQuestionCircle },
       { text: "Log out", icon: faSignOutAlt, onClick: handleLogout },
     ],
     [handleLogout]

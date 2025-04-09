@@ -4,19 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
-  faBook,
-  faShoppingCart,
-  faHeart,
-  faChalkboardTeacher,
-  faBell,
-  faEnvelope,
-  faCog,
-  faCreditCard,
-  faHistory,
-  faGlobe,
+ 
   faUserEdit,
-  faQuestionCircle,
-  faSignOutAlt,
+  
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import styles from "./profile.module.css";
@@ -39,21 +29,7 @@ export default function Profile() {
   }, []);
 
   const menuItems = [
-    { text: "My learning", icon: faBook },
-    { text: "My cart", icon: faShoppingCart },
-    { text: "Wishlist", icon: faHeart },
-    { text: "Teach on CodePulse", icon: faChalkboardTeacher },
-    { text: "Notifications", icon: faBell },
-    { text: "Messages", icon: faEnvelope },
-    { text: "Account settings", icon: faCog },
-    { text: "Payment methods", icon: faCreditCard },
-    { text: "Subscriptions", icon: faCreditCard },
-    { text: "Purchase history", icon: faHistory },
-    { text: "Language", icon: faGlobe },
-    { text: "Public profile", icon: faUser },
     { text: "Edit profile", icon: faUserEdit },
-    { text: "Help and Support", icon: faQuestionCircle },
-    { text: "Log out", icon: faSignOutAlt },
   ];
 
   const handleLogout = () => {

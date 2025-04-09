@@ -41,10 +41,11 @@ const Register = () => {
     const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%&!*^])[A-Za-z\d@#$%&!*^]{8,}$/;
     if (!passwordRegex.test(password)) {
       setError(
-        "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل، ورمز خاص واحد (@, #, $, %, إلخ)، وأن تكون طولها 8 أحرف على الأقل."
+        "Password must contain at least one uppercase letter, one special character (@, #, $, %, etc.), and be at least 8 characters long."
       );
       return;
     }
+
 
     // Prepare data to be sent
     const userData = {

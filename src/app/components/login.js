@@ -50,7 +50,7 @@ const Login = () => {
         return;
       }
 
-      setSuccess("خش يا بطل كمل واثبت نفسك");
+      setSuccess("Login successful. Welcome back!");
       console.log("Login successful:", result);
 
       // هنا يمكنك تخزين التوكن وإعادة توجيه المستخدم

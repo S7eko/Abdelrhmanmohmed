@@ -1,4 +1,3 @@
-/* BlogComponents.module.css */
 .blogContainer {
   max-width: 1200px;
   margin: 70px auto;
@@ -36,7 +35,7 @@
   border: 2px solid #e2e8f0;
   border-radius: 8px;
   font-size: 1rem;
-  transition: all 0.3s;
+  transition: 0.3s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -69,7 +68,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: 0.2s;
   font-size: 0.95rem;
   font-weight: 500;
 }
@@ -94,7 +93,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: 0.3s;
   background-color: white;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
@@ -145,7 +144,10 @@
   line-height: 1.4;
   font-weight: 600;
 }
-
+.articleContent h3:hover {
+  color: #4CAF50;
+  text-decoration: underline;
+}
 .excerpt {
   color: #4a5568;
   margin-bottom: 1.2rem;
@@ -189,7 +191,7 @@
   cursor: pointer;
   color: #718096;
   font-size: 0.9rem;
-  transition: color 0.2s;
+  transition: 0.2s;
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
 }
@@ -198,12 +200,9 @@
   background-color: #f7fafc;
 }
 
-.likeButton:hover, .liked {
-  color: #e53e3e !important;
-}
-
+.likeButton:hover,
 .liked {
-  color: #e53e3e;
+  color: #e53e3e !important;
 }
 
 .saved {
@@ -224,7 +223,7 @@
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
-  transition: background-color 0.2s;
+  transition: 0.2s;
 }
 
 .loadMore button:hover {
@@ -252,24 +251,52 @@
   font-size: 1.1rem;
 }
 
-/* تصميم متجاوب */
+/* Responsive */
 @media (max-width: 768px) {
   .articlesGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .blogHeader h1 {
     font-size: 2rem;
   }
-  
+
   .categories {
     justify-content: flex-start;
     overflow-x: auto;
     padding-bottom: 0.5rem;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .categories button {
     white-space: nowrap;
   }
+}
+
+/* New additions */
+.articleLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.articleLink:hover h3 {
+  color: #4CAF50;
+  text-decoration: underline;
+}
+
+.commentButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.commentButton:hover {
+  background-color: #f7fafc;
+  color: #4299e1;
 }
