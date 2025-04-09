@@ -276,6 +276,13 @@
   color: inherit;
 }
 
+/* ✅ اللون لما العنصر يكون مفعّل (تم الضغط عليه) */
+.lectureList li.active {
+  color: #28a745; /* مثلًا أخضر، تقدر تغيره */
+  font-weight: bold;
+}
+
+
 /* Quizzes Styles */
 .quizzes h4 {
   font-size: 1.2rem;
