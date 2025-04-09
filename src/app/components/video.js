@@ -21,7 +21,6 @@ const Video = () => {
   const [progress, setProgress] = useState(0);
   const [downloadingFile, setDownloadingFile] = useState(null);
   const [hasVideoError, setHasVideoError] = useState(false);
-  const [courseProgress, setCourseProgress] = useState({});
 
   // Constants
   const API_BASE_URL = "https://skillbridge.runasp.net";
@@ -32,24 +31,8 @@ const Video = () => {
   const router = useRouter();
   const courseId = searchParams.get("id");
 
-  // Calculate progress based on completed lectures
-  const calculateProgress = (sections) => {
-    let totalLectures = 0;
-    let completedLectures = 0;
-
-    sections.forEach(section => {
-      section.lectures?.forEach(lecture => {
-        totalLectures++;
-        if (lecture.completed) {
-          completedLectures++;
-        }
-      });
-    });
-
-    return totalLectures > 0
-      ? Math.min(Math.round((completedLectures / totalLectures) * 100), 100)
-      : 0;
-  };
+  // Function to ensure progress never exceeds 100%
+  const getSafeProgress = (progressValue) => Math.min(progressValue, 100);
 
   // Fetch course details and sections
   useEffect(() => {
@@ -79,42 +62,8 @@ const Video = () => {
             return;
           }
 
-          // Fetch sections
-          const sectionsResponse = await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (!sectionsResponse.ok) {
-            throw new Error("Failed to fetch sections");
-          }
-
-          const sectionsData = await sectionsResponse.json();
-          if (sectionsData.sections && Array.isArray(sectionsData.sections)) {
-            const updatedSections = sectionsData.sections.map((section) => ({
-              ...section,
-              lectures: section.lectures?.map((lecture) => ({
-                ...lecture,
-                completed: localStorage.getItem(`lecture-${lecture.id}-completed`) === "true",
-              })) || [],
-              pdfFiles: section.pdfFiles || [],
-              quizzes: section.quizzes || []
-            }));
-
-            setSections(updatedSections);
-
-            // Calculate and set progress
-            const calculatedProgress = calculateProgress(updatedSections);
-            setProgress(calculatedProgress);
-            setCourseProgress(prev => ({
-              ...prev,
-              [courseId]: calculatedProgress
-            }));
-          } else {
-            setSections([]);
-            setProgress(0);
-          }
+          // Fetch sections with progress from backend
+          await fetchSectionsWithProgress(token);
         } catch (error) {
           console.error("Error fetching data:", error);
           Swal.fire({
@@ -140,6 +89,30 @@ const Video = () => {
       });
     }
   }, [courseId, router]);
+
+  // Function to fetch sections with progress
+  const fetchSectionsWithProgress = async (token) => {
+    const sectionsResponse = await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!sectionsResponse.ok) {
+      throw new Error("Failed to fetch sections");
+    }
+
+    const sectionsData = await sectionsResponse.json();
+
+    if (sectionsData.sections && Array.isArray(sectionsData.sections)) {
+      setSections(sectionsData.sections);
+      // Ensure progress doesn't exceed 100%
+      setProgress(getSafeProgress(sectionsData.progress || 0));
+    } else {
+      setSections([]);
+      setProgress(0);
+    }
+  };
 
   // Handle PDF download
   const handlePdfDownload = (pdfFile) => {
@@ -187,7 +160,7 @@ const Video = () => {
     }
   };
 
-  // Mark lecture as done
+  // Mark lecture as done and refetch sections to get updated progress from backend
   const markLectureAsDone = async (lectureId) => {
     try {
       const token = localStorage.getItem("token");
@@ -196,7 +169,8 @@ const Video = () => {
         return;
       }
 
-      await fetch(`${API_BASE_URL}/api/Lectures/${lectureId}/markDone`, {
+      // Mark lecture as done
+      const markDoneResponse = await fetch(`${API_BASE_URL}/api/Lectures/${lectureId}/markDone`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -204,30 +178,15 @@ const Video = () => {
         },
       });
 
-      const updatedSections = sections.map((section) => ({
-        ...section,
-        lectures: section.lectures.map((lecture) =>
-          lecture.id === lectureId ? { ...lecture, completed: true } : lecture
-        ),
-      }));
+      if (!markDoneResponse.ok) {
+      }
 
-      setSections(updatedSections);
+      // Refetch sections to get updated progress from backend
+      await fetchSectionsWithProgress(token);
 
-      const newProgress = calculateProgress(updatedSections);
-      setProgress(newProgress);
-      setCourseProgress(prev => ({
-        ...prev,
-        [courseId]: newProgress
-      }));
-
-      // Sync with server
-      await fetch(`${API_BASE_URL}/api/Sections/${courseId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+     
     } catch (error) {
-      console.error("Error marking lecture as done:", error);
+     
     }
   };
 
@@ -235,40 +194,71 @@ const Video = () => {
   const handleQuizSelect = (quizzes) => {
     setSelectedQuiz(quizzes);
     setShowQuiz(true);
+    setSelectedVideoUrl("");
     setUserAnswers({});
     setShowResults(false);
-    setSelectedVideoUrl("");
   };
 
   // Handle answer selection
   const handleAnswerSelect = (questionId, answer) => {
-    setUserAnswers((prevAnswers) => ({
-      ...prevAnswers,
-      [questionId]: answer,
+    setUserAnswers(prev => ({
+      ...prev,
+      [questionId]: answer
     }));
   };
 
-  // Handle quiz submission
-  const handleSubmitAnswers = () => {
-    if (!selectedQuiz) return;
-
-    let correctAnswers = 0;
-    selectedQuiz.forEach((quiz) => {
-      if (userAnswers[quiz.id] === quiz.answer) {
-        correctAnswers++;
+  // Handle submit answers
+  const handleSubmitAnswers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        Swal.fire("Error", "You need to be logged in to submit quiz answers.", "error");
+        return;
       }
-    });
 
-    Swal.fire({
-      icon: "success",
-      title: "Quiz Results",
-      text: `You answered ${correctAnswers} out of ${selectedQuiz.length} questions correctly!`,
-    });
+      // Calculate score
+      const correctAnswers = selectedQuiz.filter(
+        quiz => userAnswers[quiz.id] === quiz.answer
+      ).length;
+      const score = Math.round((correctAnswers / selectedQuiz.length) * 100);
 
-    setShowResults(true);
+      // Submit quiz results to backend
+      const submitResponse = await fetch(`${API_BASE_URL}/api/Quizzes/submit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          courseId,
+          score
+        }),
+      });
+
+      if (!submitResponse.ok) {
+        throw new Error("Failed to submit quiz results");
+      }
+
+      // Refetch sections to get updated progress from backend
+      await fetchSectionsWithProgress(token);
+
+      setShowResults(true);
+      Swal.fire({
+        title: "Quiz Submitted!",
+        text: `Your score: ${score}%`,
+        icon: "success"
+      });
+    } catch (error) {
+      console.error("Error submitting quiz:", error);
+      Swal.fire({
+        title: "Submission Error",
+        text: "Failed to submit quiz. Please try again.",
+        icon: "error"
+      });
+    }
   };
 
-  // Redirect to login
+  // Handle login redirect
   const handleLogin = () => {
     router.push("/login");
   };
@@ -305,11 +295,11 @@ const Video = () => {
           <div className={styles.container}>
             <div className={styles.moduleList}>
               <div className={styles.header}>
-                <h2>Overall Progress: {progress}%</h2>
+                <h2>Overall Progress: {getSafeProgress(progress)}%</h2>
                 <div className={styles.progressContainer}>
                   <div
                     className={styles.progressBar}
-                    style={{ width: `${Math.min(progress, 100)}%` }}
+                    style={{ width: `${getSafeProgress(progress)}%` }}
                   ></div>
                 </div>
               </div>
