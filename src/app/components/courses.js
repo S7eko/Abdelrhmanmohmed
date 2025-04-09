@@ -12,6 +12,7 @@ import Loader from "./Loader";
 const Courses = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [courses, setCourses] = useState([]);
+  const [allCourses, setAllCourses] = useState([]); // تخزين جميع الكورسات
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
@@ -23,31 +24,40 @@ const Courses = () => {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      setIsLoading(true);
       try {
-        let url = `https://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`;
-        if (searchQuery) {
-          url += `&Search=${searchQuery}`;
-        }
+        // جلب جميع الكورسات بدون ترحيل الصفحات للبحث الشامل
+        const allCoursesResponse = await fetch(
+          `https://skillbridge.runasp.net/api/courses?pageIndex=1&pageSize=1000`
+        );
 
-        const courseResponse = await fetch(url);
+        // جلب الكورسات للصفحة الحالية للعرض
+        const paginatedResponse = await fetch(
+          `https://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
+        );
+
         const categoryResponse = await fetch(`https://skillbridge.runasp.net/api/categories`);
 
-        if (!courseResponse.ok || !categoryResponse.ok) {
+        if (!allCoursesResponse.ok || !paginatedResponse.ok || !categoryResponse.ok) {
           throw new Error("Failed to fetch courses or categories");
         }
 
-        const courseData = await courseResponse.json();
+        const allCoursesData = await allCoursesResponse.json();
+        const paginatedData = await paginatedResponse.json();
         const categoryData = await categoryResponse.json();
 
-        if (courseData && courseData.data && courseData.totalCount !== undefined) {
-          setCourses(courseData.data);
-          setTotalCourses(courseData.totalCount);
+        if (allCoursesData && allCoursesData.data) {
+          setAllCourses(allCoursesData.data);
+        }
+
+        if (paginatedData && paginatedData.data && paginatedData.totalCount !== undefined) {
+          setCourses(paginatedData.data);
+          setTotalCourses(paginatedData.totalCount);
         }
 
         if (categoryData) {
           setCategories(categoryData);
         }
+
       } catch (error) {
         setError(error.message);
       } finally {
@@ -56,17 +66,24 @@ const Courses = () => {
     };
 
     fetchCourses();
-  }, [page, pageSize, searchQuery]);
+  }, [page, pageSize]);
 
   const totalPages = Math.ceil(totalCourses / pageSize);
 
-  const filteredCourses = categoryFilter
-    ? courses.filter((item) => item.category.toLowerCase() === categoryFilter.toLowerCase())
-    : courses;
+  // تصفية الكورسات بناءً على البحث (من جميع الكورسات) والفئة المحددة (من الصفحة الحالية)
+  const filteredCourses = searchQuery
+    ? allCourses.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    : categoryFilter
+      ? courses.filter((item) => item.category.toLowerCase() === categoryFilter.toLowerCase())
+      : courses;
 
   const handleCategoryClick = (category) => {
     setCategoryFilter(category);
     setSearchQuery("");
+    setPage(1); // العودة للصفحة الأولى عند تغيير الفئة
   };
 
   const handleCourseClick = (id) => {
@@ -98,7 +115,7 @@ const Courses = () => {
                   </a>
                 ))
               ) : (
-                <p>استني شويه في مستجعل ليه</p>
+                <p>Loading categories...</p>
               )}
             </div>
           </div>
@@ -119,7 +136,8 @@ const Courses = () => {
                       <Image src={item.image} alt={item.title} loading="lazy" width={380} height={230} />
                       <div className={classes.recommendations_Card_item_star}>
                         <a className={classes.star} href="">
-                          <FontAwesomeIcon color="#FCD980" icon={faStar} width={15} height={15} /> {item.rating}
+                          <FontAwesomeIcon color="#FCD980" icon={faStar} width={15} height={15} />{" "}
+                          {item.rating}
                         </a>
                       </div>
                     </div>
@@ -150,18 +168,21 @@ const Courses = () => {
           </div>
         </div>
 
-        <div className={classes.pagination}>
-          <button onClick={() => setPage((prevPage) => Math.max(prevPage - 1, 1))} disabled={page === 1}>
-            Previous
-          </button>
-          <span>Page {page} of {totalPages}</span>
-          <button
-            onClick={() => setPage((prevPage) => Math.min(prevPage + 1, totalPages))}
-            disabled={page === totalPages}
-          >
-            Next
-          </button>
-        </div>
+        {/* إخفاء الترقيم الصفحي عند البحث لأنه يعرض جميع النتائج */}
+        {!searchQuery && (
+          <div className={classes.pagination}>
+            <button onClick={() => setPage((prevPage) => Math.max(prevPage - 1, 1))} disabled={page === 1}>
+              Previous
+            </button>
+
+            <button
+              onClick={() => setPage((prevPage) => Math.min(prevPage + 1, totalPages))}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </Container>
   );

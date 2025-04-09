@@ -60,8 +60,8 @@ const Dashboard = () => {
                 Add Content
               </li>
               <li onClick={handleViewCoursesClick}>
-                <FontAwesomeIcon icon={faEye} width={20} height={20} />
-                View Courses
+                <FontAwesomeIcon icon={faTrashCan} width={20} height={20} />
+                Delete Courses
               </li>
               <li onClick={handleAddQuizClick}>
                 <FontAwesomeIcon icon={faPlus} width={20} height={20} />
@@ -78,36 +78,8 @@ const Dashboard = () => {
           {/* عرض الرسومات والإحصائيات فقط إذا لم يتم تحديد أي إجراء */}
           {!selectedAction && (
             <div className={classes.dashboard_right_text}>
-              <div className={classes.quickStats}>
-                <div className={classes.statCard}>
-                  <FontAwesomeIcon icon={faChartLine} className={classes.statIcon} />
-                  <h3>Total Courses</h3>
-                  <p>120</p>
-                </div>
-                <div className={classes.statCard}>
-                  <FontAwesomeIcon icon={faFire} className={classes.statIcon} />
-                  <h3>Active Learners</h3>
-                  <p>5,678</p>
-                </div>
-                <div className={classes.statCard}>
-                  <FontAwesomeIcon icon={faBell} className={classes.statIcon} />
-                  <h3>Pending Actions</h3>
-                  <p>3</p>
-                </div>
-              </div>
-              <div className={classes.popularCourses}>
-                <h2>Most Popular Courses</h2>
-                <ul>
-                  <li>Introduction to Programming</li>
-                  <li>Advanced Web Development</li>
-                  <li>Data Science Fundamentals</li>
-                  <li>Machine Learning Basics</li>
-                  <li>Mobile App Development</li>
-                  <li>UI/UX Design Essentials</li>
-                  <li>Cloud Computing Fundamentals</li>
-                  
-                </ul>
-              </div>
+              <AddCourse />
+
               
             </div>
           )}
