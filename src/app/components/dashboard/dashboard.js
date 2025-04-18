@@ -9,6 +9,7 @@ import CoursesList from "./courseList";
 import DeleteCourse from "./addContent";
 import AddQuiz from "./addQuiz";
 import AddFile from "./addFile";
+import AddArticle from "./addArticle";
 
 const Dashboard = () => {
   const [selectedAction, setSelectedAction] = useState(null); // الحالة للتحكم في العرض
@@ -35,6 +36,9 @@ const Dashboard = () => {
 
   const handleAddFileClick = () => {
     setSelectedAction("file");
+  };
+  const handleAddArticleClick = () => {
+    setSelectedAction("article");
   };
 
   return (
@@ -71,6 +75,12 @@ const Dashboard = () => {
                 <FontAwesomeIcon icon={faPlus} width={20} height={20} />
                 Add File
               </li>
+              <li onClick={handleAddArticleClick}>
+                <FontAwesomeIcon icon={faPlus} width={20} height={20} />
+                Add article
+                
+          
+              </li>
             </ul>
           </div>
         </div>
@@ -92,6 +102,7 @@ const Dashboard = () => {
             {selectedAction === "delete" && <DeleteCourse />}
             {selectedAction === "quiz" && <AddQuiz />}
             {selectedAction === "file" && <AddFile />}
+            {selectedAction === "article" && <AddArticle />}
           </div>
         </div>
       </div>

@@ -1,0 +1,130 @@
+/* Blog Details Container */
+.blogDetails {
+  max-width: 1200px;
+  margin: 100px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+/* Image Section */
+.blogDetails_image {
+  margin-bottom: 20px;
+  text-align: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.blogDetails_image img {
+  width: 80%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Info Section */
+.blogDetails_info {
+  padding: 20px;
+  color: #444;
+}
+
+.blogDetails_info h1 {
+  font-size: 2rem;
+  color: #000;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.blogDetails_info h2 {
+  font-size: 1.2rem;
+  color: #000;
+  margin-bottom: 20px;
+}
+
+.blogDetails_info p {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: #000;
+}
+
+.blogDetails_info p strong {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Content Blocks */
+.blogDetails_info div {
+  margin-bottom: 20px;
+}
+
+.blogDetails_info div p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.blogDetails_info div img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  margin-top: 15px;
+  border-radius: 8px;
+}
+
+/* Action Button */
+.blogDetails_button {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.blogDetails_button .btn {
+  padding: 12px 25px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.blogDetails_button .btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.blogDetails_button .btn:focus {
+  outline: none;
+}
+
+/* Loader Styling */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loader .spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error Styling */
+.error {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #d9534f;
+  margin-top: 20px;
+}
