@@ -1,147 +1,181 @@
-/* Container */
-.container {
-  max-width: 40rem;
-  margin: 70px auto;
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
+/* أساسيات التصميم */
 
-/* Headings */
-.title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1a202c;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-/* Alerts */
-.error {
-  background-color: #fff5f5;
-  border: 1px solid #fc8181;
-  color: #e53e3e;
-  padding: 1rem;
-  border-radius: 0.375rem;
-  margin-bottom: 1.5rem;
-}
-
-.success {
-  background-color: #f0fff4;
-  border: 1px solid #68d391;
-  color: #38a169;
-  padding: 1rem;
-  border-radius: 0.375rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Form Styles */
-.form {
+/* الحاوية الرئيسية */
+.container_center {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4a5568;
-}
-
-.input,
-.textarea,
-.contentTextarea {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-.input:focus,
-.textarea:focus,
-.contentTextarea:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.fileInput {
-  padding: 0.5rem 0;
-}
-
-.textarea,
-.contentTextarea {
-  min-height: 6rem;
-  resize: vertical;
-}
-
-/* Dynamic Content Block */
-.contentBlock {
-  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  height: 100vh;
+}
+
+.add_course {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh; /* إضافة حد أقصى للارتفاع */
+  overflow-y: auto; /* إظهار التمرير عند الحاجة */
+}
+
+/* العنوان */
+.add_course h2 {
+  font-size: 2rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+/* نمط الحقول */
+.form_group {
+  margin-bottom: 1.5rem;
+}
+
+.form_group label {
+  font-size: 1rem;
+  color: #555;
+  display: block;
   margin-bottom: 0.5rem;
 }
 
-.contentTextarea {
-  flex: 1;
+.form_group input,.form_group select, .form_group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
 }
 
-/* Buttons */
-.removeButton,
-.addButton,
-.submitButton {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-weight: 500;
+.form_group input:focus,.form_group select:focus,.form_group textarea:focus {
+  border-color: #4CAF50;
+  outline: none;
 }
 
-.removeButton {
-  background-color: #e53e3e;
-  color: #fff;
+.form_group textarea {
+  resize: vertical;
 }
 
-.removeButton:hover {
-  background-color: #c53030;
-}
-
-.addButton {
+/* الرسائل الخطأ */
+.error_message {
+  color: #f44336;
+  font-size: 0.875rem;
   margin-top: 0.5rem;
-  background-color: #edf2f7;
-  color: #4a5568;
 }
 
-.addButton:hover {
-  background-color: #e2e8f0;
+.error_border {
+  border-color: #f44336 !important;
 }
 
-.submitContainer {
+/* الحقول المعتمدة */
+.has_error input, .has_error select, .has_error textarea {
+  border-color: #f44336;
+}
+
+/* زر رفع الملف */
+.file_input_container {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.submitButton {
-  background-color: #667eea;
-  color: #fff;
-  padding: 0.5rem 1.5rem;
+.file_input_label {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.submitButton:hover {
-  background-color: #5a67d8;
+.file_input_label:hover {
+  background-color: #45a049;
 }
 
-.submitButton:disabled {
-  background-color: #a3bffa;
+.image_preview img {
+  width: 100%;
+  max-width: 150px;
+  border-radius: 8px;
+  margin-top: 1rem;
+  object-fit: cover;
+}
+
+/* فقرة المحتوى */
+.content_block_container {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.remove_button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5rem 1rem;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.remove_button:hover {
+  background-color: #e53935;
+}
+
+.add_button {
+  padding: 0.75rem 1.5rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.add_button:hover {
+  background-color: #45a049;
+}
+
+/* زر إرسال */
+.submit_button {
+  padding: 0.75rem 2rem;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.submit_button:hover {
+  background-color: #1976D2;
+}
+
+.submit_button:disabled {
+  background-color: #B0BEC5;
   cursor: not-allowed;
+}
+
+/* دوران */
+.spinner_icon {
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* الفواصل والتباعد */
+.form_actions {
+  text-align: center;
 }

@@ -106,8 +106,7 @@
   border-radius: 10px;
   box-sizing: border-box;
   margin-bottom: 20px;
-  height: 100vh; /* ارتفاع كامل */
-  overflow-y: auto; /* إظهار شريط التمرير الرأسي عند الحاجة */
+  height: calc(100vh - 70px); /* ارتفاع متساوي مع الحاوية الجانبية */
   overflow-x: hidden; /* إخفاء التمرير الأفقي */
 }
 .add_component{

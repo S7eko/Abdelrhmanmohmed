@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import classes from "../../style/AddCourse.module.css";
+import classes from "../../style/addArticle.module.css";
 import { FaSpinner } from "react-icons/fa";
 
 const AddArticle = () => {
