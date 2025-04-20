@@ -82,7 +82,14 @@ const BlogDetails = () => {
               {state.blog.contentBlocks?.map((block, index) => (
                 <div key={index}>
                   <p>{block.text}</p>
-                  {block.image && <Image src={block.image} alt={`Content image ${index}`} width={500} height={300} />}
+                  {block.image && (
+                    <Image
+                      src={block.image}
+                      alt={`Content image ${index}`}
+                      width={500}
+                      height={300}
+                    />
+                  )}
                 </div>
               ))}
             </div>
