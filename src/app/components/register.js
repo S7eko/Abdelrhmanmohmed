@@ -28,26 +28,24 @@ const Register = () => {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
-    setSuccess(""); // Clear previous success messages
+    setError("");
+    setSuccess("");
 
-    // Check if all fields are filled
-    if (!name || !email || !password) {
+    // Validation
+    if (!name || !email || !password || !role) {
       setError("جميع الحقول مطلوبة");
       return;
     }
 
-    // Validate password contains at least one uppercase letter and one special character
     const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%&!*^])[A-Za-z\d@#$%&!*^]{8,}$/;
     if (!passwordRegex.test(password)) {
       setError(
-        "Password must contain at least one uppercase letter, one special character (@, #, $, %, etc.), and be at least 8 characters long."
+        "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل، وحرف خاص واحد (@, #, $, %, إلخ)، وأن تكون طولها 8 أحرف على الأقل."
       );
       return;
     }
 
-
-    // Prepare data to be sent
+    // Prepare data
     const userData = {
       email: email,
       password: password,
@@ -64,11 +62,9 @@ const Register = () => {
         body: JSON.stringify(userData),
       });
 
-      // تحقق من الرد الخام
       const rawResponse = await response.text();
       console.log("Raw Response:", rawResponse);
 
-      // حاول تحويل الرد إلى JSON
       let result;
       try {
         result = JSON.parse(rawResponse);
@@ -79,9 +75,7 @@ const Register = () => {
       }
 
       if (!response.ok) {
-        // Handle API-specific errors
         if (result.errors) {
-          // If the API returns multiple errors (e.g., validation errors)
           const errorMessages = Object.values(result.errors).join(", ");
           setError(errorMessages);
         } else {
@@ -90,14 +84,14 @@ const Register = () => {
         return;
       }
 
-      // If registration is successful
       console.log("تم التسجيل بنجاح:", result);
       setSuccess("تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.");
+      // Reset form
       setName("");
       setEmail("");
       setPassword("");
+      setRole("");
     } catch (error) {
-      // Handle network or other errors
       console.error("خطأ في التسجيل:", error);
       setError("حدث خطأ. يرجى المحاولة مرة أخرى لاحقًا.");
     }
@@ -105,7 +99,6 @@ const Register = () => {
 
   const content = [
     {
-
       h3: "Homepage",
       h1: "One Step Closer to Your Dream",
       p: "A free E-Learning service ready to help you become an expert.",
@@ -118,12 +111,9 @@ const Register = () => {
   return (
     <div className={classes.login}>
       <div className={classes.login_content}>
-        {/* Header */}
         <header className={classes.login_header}></header>
 
-        {/* Body */}
         <div className={classes.login_body}>
-          {/* Left Side */}
           <section className={classes.login_body_left}>
             <div className={classes.login_body_left_image}>
               <h1>{content[0].h1}</h1>
@@ -131,14 +121,12 @@ const Register = () => {
             </div>
           </section>
 
-          {/* Right Side */}
           <section className={classes.login_body_right}>
             <div className={classes.login_body_right_text}>
               <h1>تسجيل</h1>
               <p>استعد لمستقبل مليء بالنجوم.</p>
             </div>
             <form onSubmit={handleSubmit}>
-              {/* Name Input */}
               <InputField
                 type="text"
                 id="name"
@@ -147,7 +135,6 @@ const Register = () => {
                 onChange={(e) => setName(e.target.value)}
               />
 
-              {/* Email Input */}
               <InputField
                 type="email"
                 id="email"
@@ -156,7 +143,6 @@ const Register = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
 
-              {/* Password Input */}
               <InputField
                 type="password"
                 id="password"
@@ -168,42 +154,52 @@ const Register = () => {
               {/* Role Selection */}
               <div className={classes.select}>
                 <div
-                  className={`${classes.role} ${role === "student" ? classes.active : ""}`}
-                  onClick={() => setRole("student")}
+                  className={`${classes.role} ${role === "Student" ? classes.active : ""}`}
+                  onClick={() => setRole("Student")}
                 >
-                  <label htmlFor="student">طالب</label>
+                  <label htmlFor="Student">طالب</label>
                   <input
                     type="radio"
                     name="role"
-                    value="student"
-                    checked={role === "student"}
-                    onChange={(e) => setRole(e.target.value)}
+                    value="Student"
+                    checked={role === "Student"}
+                    onChange={() => setRole("Student")}
                   />
                 </div>
                 <div
-                  className={`${classes.role} ${role === "instructor" ? classes.active : ""}`}
-                  onClick={() => setRole("instructor")}
+                  className={`${classes.role} ${role === "Instructor" ? classes.active : ""}`}
+                  onClick={() => setRole("Instructor")}
                 >
-                  <label htmlFor="instructor">مدرس</label>
+                  <label htmlFor="Instructor">مدرس</label>
                   <input
                     type="radio"
                     name="role"
-                    value="instructor"
-                    checked={role === "instructor"}
-                    onChange={(e) => setRole(e.target.value)}
+                    value="Instructor"
+                    checked={role === "Instructor"}
+                    onChange={() => setRole("Instructor")}
+                  />
+                </div>
+                <div
+                  className={`${classes.role} ${role === "Admin" ? classes.active : ""}`}
+                  onClick={() => setRole("Admin")}
+                >
+                  <label htmlFor="Admin">مسؤول</label>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="Admin"
+                    checked={role === "Admin"}
+                    onChange={() => setRole("Admin")}
                   />
                 </div>
               </div>
 
-              {/* Submit Button */}
+
               <div className={classes.form_group}>
                 <button type="submit">{content[0].button}</button>
               </div>
 
-              {/* Error Message */}
               {error && <p className={classes.error}>{error}</p>}
-
-              {/* Success Message */}
               {success && <p className={classes.success}>{success}</p>}
 
               <span>

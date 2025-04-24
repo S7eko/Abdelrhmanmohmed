@@ -143,3 +143,74 @@
   position: relative;
   z-index: 1;
 }
+.reviewsContainer {
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reviewItem {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.reviewRating {
+  font-weight: bold;
+  color: #ffc107;
+}
+
+.reviewDate {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.reviewContent {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.reviewFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.reviewAuthor {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.deleteButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.deleteButton:hover {
+  background: #c82333;
+}
+
+.selectInput {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+}

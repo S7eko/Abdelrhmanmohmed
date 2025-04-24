@@ -1,0 +1,143 @@
+/* Global Styles */
+
+/* Body Styling */
+
+
+/* Container Styling */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Loading and Error States */
+.loadingContainer, .errorContainer {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.loadingContainer .spinner,
+.loadingContainer .smallSpinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+.errorContainer {
+  color: red;
+}
+
+.errorIcon {
+  font-size: 48px;
+  color: red;
+}
+
+.errorContainer h3 {
+  margin-top: 10px;
+}
+
+.retryButton {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.retryButton:hover {
+  background-color: #2980b9;
+}
+
+/* Select Input Styling */
+.selectInput {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.SelectCourse label {
+  font-weight: bold;
+}
+
+/* Posts Section Styling */
+.postsContainer {
+  margin-top: 10px;
+}
+
+.postsList {
+  margin-top: 20px;
+}
+
+.postItem {
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+}
+
+.postHeader .userImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.postAuthor {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.postMessage {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.commentsContainer {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.commentAuthor {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.deleteButton {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  margin-top: 15px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.deleteButton:hover {
+  background-color: #c0392b;
+}
+
+.postsContainer h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* Animation for Loading Spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
