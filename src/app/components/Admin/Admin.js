@@ -7,6 +7,7 @@ import DeleteBlog from "./deleteBlog";
 import DeleteReviews from "./deleteReviews";
 import DeletePost from "./deletePost";
 import DeletCourse from "./DeleteCourse";
+import DeleteSections from "./deletsections";
 
 const Admin = () => {
   const [selectedAction, setSelectedAction] = useState(null);
@@ -36,6 +37,10 @@ const Admin = () => {
     setSelectedAction("deleteComment");
   };
 
+  const handleDeleteSectionClick = () => {
+    setSelectedAction("deleteSection");
+  };
+
   // Delete menu items data
   const deleteMenuItems = [
     {
@@ -44,9 +49,9 @@ const Admin = () => {
       handler: handleDeleteCourseClick
     },
     {
-      label: "Delete Lecture",
-      action: "deleteLecture",
-      handler: handleDeleteLectureClick
+      label: "Delete Section",
+      action: "deleteSection",
+      handler: handleDeleteSectionClick
     },
     {
       label: "Delete Review",
@@ -105,6 +110,7 @@ const Admin = () => {
             {selectedAction === "deleteReview" && <DeleteReviews />}
             {selectedAction === "deletePost" && <DeletePost />}
             {selectedAction === "deleteCourse" && <DeletCourse />}
+            {selectedAction === "deleteSection" && <DeleteSections />}
 
 
 

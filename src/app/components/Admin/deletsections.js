@@ -1,15 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import classes from "../../style/DeleteReviews.module.css";
+import classes from "../../style/deletePost.module.css";
 import Swal from "sweetalert2";
 
-const DeleteReviews = () => {
+const DeleteSections = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
-  const [reviews, setReviews] = useState([]);
+  const [sections, setSections] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [sectionsLoading, setSectionsLoading] = useState(false);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -61,22 +61,22 @@ const DeleteReviews = () => {
 
   useEffect(() => {
     if (selectedCourse) {
-      console.log("Fetching reviews for course:", selectedCourse);
-      fetchReviews(selectedCourse);
+      console.log("Fetching sections for course:", selectedCourse);
+      fetchSections(selectedCourse); // تعديل هنا لاستدعاء API الجديد
     } else {
-      setReviews([]);
+      setSections([]);
     }
   }, [selectedCourse]);
 
-  const fetchReviews = async (courseId) => {
-    setReviewsLoading(true);
+  const fetchSections = async (courseId) => {
+    setSectionsLoading(true);
     setError(null);
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("يجب تسجيل الدخول أولاً");
 
       const response = await fetch(
-        `https://skillbridge.runasp.net/api/Reviews/${courseId}`,
+        `https://skillbridge.runasp.net/api/Sections/${courseId}`, // استخدام API الصحيح هنا
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -85,31 +85,28 @@ const DeleteReviews = () => {
       );
 
       if (!response.ok) {
-        throw new Error(`خطأ في جلب التعليقات: ${response.status}`);
+        throw new Error(`خطأ في جلب الأقسام: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Reviews data:", data);
-      setReviews(data);
+      console.log("Sections data:", data);
+      setSections(data.sections || []); // تأكد من جلب الأقسام بشكل صحيح
     } catch (error) {
-      console.error("Error fetching reviews:", error);
+      console.error("Error fetching sections:", error);
       setError(error.message);
     } finally {
-      setReviewsLoading(false);
+      setSectionsLoading(false);
     }
   };
 
-  const handleDeleteReview = async (reviewId) => {
+  const handleDeleteSection = async (sectionId) => {
     const confirm = await Swal.fire({
       title: "هل أنت متأكد؟",
-      text: "لن تتمكن من استرجاع التعليق بعد حذفه!",
+      text: "لن تتمكن من استرجاع القسم بعد حذفه!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
       confirmButtonText: "نعم، احذفه",
       cancelButtonText: "إلغاء",
-      reverseButtons: true
     });
 
     if (confirm.isConfirmed) {
@@ -121,29 +118,26 @@ const DeleteReviews = () => {
         }
 
         const response = await fetch(
-          `https://skillbridge.runasp.net/api/Admin/reviews/${reviewId}`,
+          `https://skillbridge.runasp.net/api/Admin/sections/${sectionId}`,
           {
             method: "DELETE",
             headers: {
-              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           }
         );
 
-        console.log("Delete response:", response);
-
-        if (response.status === 204 || response.status === 200) {
-          Swal.fire("تم الحذف!", "تم حذف التعليق بنجاح", "success");
-          fetchReviews(selectedCourse);
-        } else {
+        if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          console.error("Delete error details:", errorData);
-          throw new Error(errorData.message || "فشل في حذف التعليق");
+          console.error("Delete response error data:", errorData);
+          throw new Error(errorData.message || "فشل في حذف القسم");
         }
+
+        Swal.fire("تم الحذف!", "تم حذف القسم بنجاح", "success");
+        fetchSections(selectedCourse); // تحديث الأقسام بعد الحذف
       } catch (error) {
         console.error("Delete error:", error);
-        Swal.fire("خطأ", error.message || "حدث خطأ أثناء محاولة الحذف", "error");
+        Swal.fire("خطأ", error.message, "error");
       }
     }
   };
@@ -193,45 +187,26 @@ const DeleteReviews = () => {
         </div>
 
         {selectedCourse && (
-          <div className={classes.reviewsContainer}>
-            <h3>تعليقات الكورس</h3>
-            {reviewsLoading ? (
+          <div className={classes.sectionsContainer}>
+            <h3>الأقسام المتعلقة بالكورس</h3>
+            {sectionsLoading ? (
               <div className={classes.loadingContainer}>
                 <div className={classes.smallSpinner}></div>
-                <p>جاري تحميل التعليقات...</p>
+                <p>جاري تحميل الأقسام...</p>
               </div>
-            ) : reviews.length === 0 ? (
-              <p>لا توجد تعليقات لهذا الكورس</p>
+            ) : sections.length === 0 ? (
+              <p>لا توجد أقسام لهذا الكورس</p>
             ) : (
-              <div className={classes.reviewsList}>
-                {reviews.map((review) => (
-                  <div key={review.id} className={classes.reviewItem}>
-                    <div className={classes.reviewHeader}>
-                      {review.userImage && (
-                        <img
-                          src={review.userImage}
-                          alt={review.userName}
-                          className={classes.userImage}
-                        />
-                      )}
-                      <div className={classes.reviewInfo}>
-                        <span className={classes.reviewAuthor}>
-                          {review.userName}
-                        </span>
-                        <span className={classes.reviewRating}>
-                          التقييم: {review.rating}/5
-                        </span>
-                        <span className={classes.reviewDate}>
-                          {new Date(review.createdAt).toLocaleDateString('ar-EG')}
-                        </span>
-                      </div>
-                    </div>
-                    <p className={classes.reviewContent}>{review.review}</p>
+              <div className={classes.sectionsList}>
+                {sections.map((section) => (
+                  <div key={section.id} className={classes.sectionItem}>
+                    <h4>{section.sectionName}</h4> {/* عرض اسم القسم */}
+                    <p>{section.description}</p>
                     <button
-                      onClick={() => handleDeleteReview(review.id)}
+                      onClick={() => handleDeleteSection(section.id)}
                       className={classes.deleteButton}
                     >
-                      حذف التعليق
+                      حذف القسم
                     </button>
                   </div>
                 ))}
@@ -244,4 +219,4 @@ const DeleteReviews = () => {
   );
 };
 
-export default DeleteReviews;
+export default DeleteSections;
