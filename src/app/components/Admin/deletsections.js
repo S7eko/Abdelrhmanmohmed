@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import classes from "../../style/deletePost.module.css";
+import classes from "../../style/deletsections.module.css";
 import Swal from "sweetalert2";
 
 const DeleteSections = () => {
@@ -11,6 +11,7 @@ const DeleteSections = () => {
   const [error, setError] = useState(null);
   const [sectionsLoading, setSectionsLoading] = useState(false);
 
+  // تحسين جلب الكورسات مع إدارة أفضل للأخطاء
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -22,6 +23,7 @@ const DeleteSections = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
@@ -34,9 +36,7 @@ const DeleteSections = () => {
         }
 
         const data = await response.json();
-        const coursesData = data.data || data;
-        console.log("Courses data:", coursesData);
-        setCourses(coursesData);
+        setCourses(data.data || data);
       } catch (error) {
         console.error("Error fetching courses:", error);
         setError(error.message);
@@ -59,10 +59,10 @@ const DeleteSections = () => {
     fetchCourses();
   }, []);
 
+  // تحسين جلب الأقسام باستخدام API الجديد
   useEffect(() => {
     if (selectedCourse) {
-      console.log("Fetching sections for course:", selectedCourse);
-      fetchSections(selectedCourse); // تعديل هنا لاستدعاء API الجديد
+      fetchSections(selectedCourse);
     } else {
       setSections([]);
     }
@@ -76,21 +76,28 @@ const DeleteSections = () => {
       if (!token) throw new Error("يجب تسجيل الدخول أولاً");
 
       const response = await fetch(
-        `https://skillbridge.runasp.net/api/Sections/${courseId}`, // استخدام API الصحيح هنا
+        `https://skillbridge.runasp.net/api/Courses/sectionsId/${courseId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error(`خطأ في جلب الأقسام: ${response.status}`);
+        if (response.status === 404) {
+          setSections([]);
+          return;
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `خطأ في جلب الأقسام: ${response.status}`
+        );
       }
 
       const data = await response.json();
-      console.log("Sections data:", data);
-      setSections(data.sections || []); // تأكد من جلب الأقسام بشكل صحيح
+      setSections(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching sections:", error);
       setError(error.message);
@@ -107,14 +114,15 @@ const DeleteSections = () => {
       showCancelButton: true,
       confirmButtonText: "نعم، احذفه",
       cancelButtonText: "إلغاء",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
     });
 
     if (confirm.isConfirmed) {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          Swal.fire("انتهت الجلسة", "يجب تسجيل الدخول مرة أخرى", "error");
-          return;
+          throw new Error("انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى");
         }
 
         const response = await fetch(
@@ -123,21 +131,33 @@ const DeleteSections = () => {
             method: "DELETE",
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          console.error("Delete response error data:", errorData);
           throw new Error(errorData.message || "فشل في حذف القسم");
         }
 
-        Swal.fire("تم الحذف!", "تم حذف القسم بنجاح", "success");
-        fetchSections(selectedCourse); // تحديث الأقسام بعد الحذف
+        Swal.fire({
+          title: "تم الحذف!",
+          text: "تم حذف القسم بنجاح",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        // إعادة تحميل الأقسام بعد الحذف
+        fetchSections(selectedCourse);
       } catch (error) {
         console.error("Delete error:", error);
-        Swal.fire("خطأ", error.message, "error");
+        Swal.fire({
+          title: "خطأ!",
+          text: error.message,
+          icon: "error",
+        });
       }
     }
   };
@@ -171,11 +191,13 @@ const DeleteSections = () => {
     <div className={classes.container}>
       <div className={classes.form}>
         <div className={classes.SelectCourse}>
-          <label>اختر الكورس:</label>
+          <label htmlFor="course-select">اختر الكورس:</label>
           <select
+            id="course-select"
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
             className={classes.selectInput}
+            disabled={isLoading}
           >
             <option value="">اختر كورس</option>
             {courses.map((course) => (
@@ -188,29 +210,31 @@ const DeleteSections = () => {
 
         {selectedCourse && (
           <div className={classes.sectionsContainer}>
-            <h3>الأقسام المتعلقة بالكورس</h3>
+            <h3>أقسام الكورس</h3>
             {sectionsLoading ? (
               <div className={classes.loadingContainer}>
                 <div className={classes.smallSpinner}></div>
                 <p>جاري تحميل الأقسام...</p>
               </div>
             ) : sections.length === 0 ? (
-              <p>لا توجد أقسام لهذا الكورس</p>
+              <p className={classes.noSections}>لا توجد أقسام لهذا الكورس</p>
             ) : (
-              <div className={classes.sectionsList}>
+              <ul className={classes.sectionsList}>
                 {sections.map((section) => (
-                  <div key={section.id} className={classes.sectionItem}>
-                    <h4>{section.sectionName}</h4> {/* عرض اسم القسم */}
-                    <p>{section.description}</p>
-                    <button
-                      onClick={() => handleDeleteSection(section.id)}
-                      className={classes.deleteButton}
-                    >
-                      حذف القسم
-                    </button>
-                  </div>
+                  <li key={section.id} className={classes.sectionItem}>
+                    <div className={classes.sectionHeader}>
+                      <h4>{section.sectionName || `القسم ${section.id}`}</h4>
+                      <button
+                        onClick={() => handleDeleteSection(section.id)}
+                        className={classes.deleteButton}
+                        disabled={sectionsLoading}
+                      >
+                        حذف القسم
+                      </button>
+                    </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </div>
         )}
