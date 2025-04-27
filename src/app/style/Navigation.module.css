@@ -14,7 +14,7 @@
   z-index: 9999;
 }
 
-.nav_left {
+/* .nav_left {
   padding-left: 20px;
   display: flex;
   align-items: center;
@@ -26,9 +26,92 @@
 }
 
 .nav_left h2 a {
-  color: #FCD980; /* لون النص الذهبي */
+  color: #FCD980; 
   text-decoration: none;
+} */
+ /* Logo Container */
+ .nav_left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
+
+.nav_left:hover {
+  background: rgba(252, 217, 128, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.02);
+}
+
+.nav_left:hover h2 {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Logo Image */
+.logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  will-change: transform;
+}
+
+.logo:hover {
+  transform: rotate(15deg) scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(252, 217, 128, 0.3));
+}
+
+/* Brand Name */
+.nav_left h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FCD980 0%, #FDE8A0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-bottom: 4px;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.nav_left h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #FCD980, transparent);
+  transition: width 0.4s ease;
+}
+
+.nav_left:hover h2::after {
+  width: 100%;
+}
+
+/* Link Styles */
+.nav_left h2 a {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.nav_left h2 a:hover {
+  transform: translateY(-2px);
+}
+
 
 .nav_right {
   display: flex;

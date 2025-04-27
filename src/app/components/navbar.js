@@ -15,6 +15,7 @@ import {
   faQuestionCircle,
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -63,6 +64,9 @@ const Navbar = () => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowProfile(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setShowNotifications(false);
       }
     };
 
@@ -135,7 +139,6 @@ const Navbar = () => {
 
   const menuItems = useMemo(
     () => [
-      
       { text: "Edit profile", href: "/course/profile", icon: faUserEdit },
       { text: "Log out", icon: faSignOutAlt, onClick: handleLogout },
     ],
@@ -154,6 +157,14 @@ const Navbar = () => {
     <div className={styles.mar}>
       <div className={styles.nav_container}>
         <div className={styles.nav_left}>
+          {/* إضافة اللوجو هنا */}
+          <Image
+            src="/logo.svg" // تأكد من وجود الملف في مجلد public
+            alt="SkillVerse Logo"
+            width={40}
+            height={40}
+            className={styles.logo}
+          />
           <h2>
             <Link href="/">SkillVerse</Link>
           </h2>
@@ -173,15 +184,21 @@ const Navbar = () => {
               <li>
                 <Link href="/course/blog">BLOG</Link>
               </li>
-              <li>
-                <Link href="/course/Admin">Admin</Link>
-              </li>
-              {/* إظهار Dashboard فقط للمستخدمين المسجلين غير الطلاب */}
-              {user && user.role !== 'Student' && (
+
+              {/* إظهار Admin فقط للمسؤولين */}
+              {user && user.role === 'Admin' && (
+                <li>
+                  <Link href="/course/Admin">ADMIN</Link>
+                </li>
+              )}
+
+              {/* إظهار Dashboard للمدربين والمسؤولين */}
+              {(user && (user.role === 'Instructor' )) && (
                 <li>
                   <Link href="/course/dashboard">DASHBOARD</Link>
                 </li>
               )}
+
               <li ref={notificationsRef}>
                 <div className={styles.notificationsContainer} onClick={toggleNotifications}>
                   <FontAwesomeIcon icon={faBell} className={styles.notificationIcon} />
@@ -191,7 +208,7 @@ const Navbar = () => {
                   {showNotifications && (
                     <div className={styles.notificationsDropdown}>
                       {notifications.length === 0 ? (
-                        <p>لا توجد إشعارات جديدة.</p>
+                        <p>No new notifications</p>
                       ) : (
                         notifications.map((notification) => (
                           <div
@@ -230,6 +247,7 @@ const Navbar = () => {
                           <div>
                             <h4>{user.userName}</h4>
                             <p>{user.email}</p>
+                            <p className={styles.userRole}>{user.role}</p>
                           </div>
                         </div>
                         <ul className={styles.menuItems}>
