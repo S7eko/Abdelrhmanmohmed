@@ -61,14 +61,14 @@ const DeleteBlog = () => {
   const handleDeleteBlog = async (blogId) => {
     try {
       const result = await Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: "لن تتمكن من استعادة هذه المقالة!",
+        title: 'Are you sure?',
+        text: "You won't be able to recover this blog post!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'نعم، احذفها!',
-        cancelButtonText: 'إلغاء',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
         reverseButtons: true
       });
 
@@ -76,7 +76,7 @@ const DeleteBlog = () => {
 
       const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error("يجب تسجيل الدخول أولاً");
+        throw new Error("You must be logged in first");
       }
 
       const response = await fetch(
@@ -92,12 +92,12 @@ const DeleteBlog = () => {
 
       // Handle 403 Forbidden response specifically
       if (response.status === 403) {
-        throw new Error("ليس لديك صلاحية لحذف هذه المقالة");
+        throw new Error("You don't have permission to delete this blog post");
       }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'فشل في حذف المقالة');
+        throw new Error(errorData.message || 'Failed to delete the blog post');
       }
 
       // Optimistic update
@@ -110,15 +110,15 @@ const DeleteBlog = () => {
       }
 
       await Swal.fire(
-        'تم الحذف!',
-        'تم حذف المقالة بنجاح.',
+        'Deleted!',
+        'The blog post has been deleted successfully.',
         'success'
       );
     } catch (error) {
       console.error('Error deleting blog:', error);
       await Swal.fire(
-        'خطأ!',
-        error.message || 'حدث خطأ أثناء محاولة حذف المقالة.',
+        'Error!',
+        error.message || 'An error occurred while trying to delete the blog post.',
         'error'
       );
     }
@@ -141,11 +141,11 @@ const DeleteBlog = () => {
         <div className={styles.searchContainer}>
           <input
             type="text"
-            placeholder="ابحث عن المقالات..."
+            placeholder="Search for blog posts..."
             value={searchQuery}
             onChange={handleSearchChange}
             className={styles.searchInput}
-            aria-label="ابحث عن المقالات"
+            aria-label="Search for blog posts"
           />
           <svg
             className={styles.searchIcon}
@@ -164,21 +164,21 @@ const DeleteBlog = () => {
 
         <div className={styles.metaInfo}>
           <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>الصفحة:</span>
+            <span className={styles.metaLabel}>Page:</span>
             <span className={styles.metaValue}>{page}</span>
           </div>
           <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>عدد العناصر:</span>
+            <span className={styles.metaLabel}>Items per page:</span>
             <span className={styles.metaValue}>{pageSize}</span>
           </div>
           {searchQuery && (
             <div className={styles.metaItem}>
-              <span className={styles.metaLabel}>كلمة البحث:</span>
+              <span className={styles.metaLabel}>Search term:</span>
               <span className={styles.metaValue}>"{searchQuery}"</span>
             </div>
           )}
           <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>إجمالي المقالات:</span>
+            <span className={styles.metaLabel}>Total blog posts:</span>
             <span className={styles.metaValue}>{totalBlogs}</span>
           </div>
         </div>
@@ -189,20 +189,20 @@ const DeleteBlog = () => {
           </div>
         ) : error ? (
           <div className={styles.errorContainer}>
-            <p className={styles.errorText}>خطأ: {error}</p>
+            <p className={styles.errorText}>Error: {error}</p>
             <button onClick={() => window.location.reload()} className={styles.retryButton}>
-              إعادة المحاولة
+              Retry
             </button>
           </div>
         ) : blogs.length === 0 ? (
           <div className={styles.emptyState}>
-            <p className={styles.emptyText}>لا توجد مقالات مطابقة لبحثك.</p>
+            <p className={styles.emptyText}>No blog posts match your search.</p>
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
                 className={styles.clearSearchButton}
               >
-                مسح البحث
+                Clear search
               </button>
             )}
           </div>
@@ -222,7 +222,7 @@ const DeleteBlog = () => {
                 >
                   <Image
                     src={blog.image || "/images/blog-placeholder.jpg"}
-                    alt={blog.title || "صورة المقالة"}
+                    alt={blog.title || "Blog Post Image"}
                     width={380}
                     height={230}
                     className={styles.blogImage}
@@ -239,15 +239,15 @@ const DeleteBlog = () => {
                   tabIndex={0}
                   onKeyDown={(e) => e.key === 'Enter' && handleBlogClick(blog.id)}
                 >
-                  <div className={styles.categoryBadge}>{blog.category || "عام"}</div>
-                  <h2 className={styles.blogTitle}>{blog.title || "بدون عنوان"}</h2>
-                  <p className={styles.blogExcerpt}>{blog.excerpt || "لا يوجد محتوى"}</p>
+                  <div className={styles.categoryBadge}>{blog.category || "General"}</div>
+                  <h2 className={styles.blogTitle}>{blog.title || "No Title"}</h2>
+                  <p className={styles.blogExcerpt}>{blog.excerpt || "No Content"}</p>
                   <div className={styles.blogMeta}>
                     <div className={styles.metaItem}>
-                      <span>{blog.author || "مجهول"}</span>
+                      <span>{blog.author || "Unknown"}</span>
                     </div>
                     <div className={styles.metaItem}>
-                      <span>{blog.readTime || 0} دقيقة قراءة</span>
+                      <span>{blog.readTime || 0} min read</span>
                     </div>
                   </div>
                 </div>
@@ -257,9 +257,9 @@ const DeleteBlog = () => {
                     handleDeleteBlog(blog.id);
                   }}
                   className={styles.deleteButton}
-                  aria-label={`حذف المقالة ${blog.title}`}
+                  aria-label={`Delete blog post ${blog.title}`}
                 >
-                  حذف المقالة
+                  Delete Blog Post
                 </button>
               </article>
             ))}
@@ -272,20 +272,20 @@ const DeleteBlog = () => {
               onClick={() => setPage(Math.max(page - 1, 1))}
               disabled={page === 1}
               className={styles.paginationButton}
-              aria-label="الصفحة السابقة"
+              aria-label="Previous page"
             >
-              السابق
+              Previous
             </button>
             <span className={styles.pageInfo}>
-              الصفحة {page} من {totalPages}
+              Page {page} of {totalPages}
             </span>
             <button
               onClick={() => setPage(Math.min(page + 1, totalPages))}
               disabled={page === totalPages}
               className={styles.paginationButton}
-              aria-label="الصفحة التالية"
+              aria-label="Next page"
             >
-              التالي
+              Next
             </button>
           </div>
         )}

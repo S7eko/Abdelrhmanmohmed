@@ -68,11 +68,7 @@ const Admin = () => {
       action: "deletePost",
       handler: handleDeletePostClick
     },
-    {
-      label: "Delete Comment",
-      action: "deleteComment",
-      handler: handleDeleteCommentClick
-    }
+   
   ];
 
   return (

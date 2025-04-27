@@ -15,7 +15,7 @@ const DeleteReviews = () => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) throw new Error("يجب تسجيل الدخول أولاً");
+        if (!token) throw new Error("You must be logged in first");
 
         const response = await fetch(
           "https://skillbridge.runasp.net/api/Courses?pageIndex=1&pageSize=1000",
@@ -29,7 +29,7 @@ const DeleteReviews = () => {
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
-            errorData.message || `خطأ في جلب الكورسات: ${response.status}`
+            errorData.message || `Error fetching courses: ${response.status}`
           );
         }
 
@@ -43,8 +43,8 @@ const DeleteReviews = () => {
 
         if (error.message.includes("401")) {
           Swal.fire({
-            title: "انتهت الجلسة",
-            text: "يجب تسجيل الدخول مرة أخرى",
+            title: "Session expired",
+            text: "You need to log in again",
             icon: "error",
           }).then(() => {
             localStorage.removeItem("token");
@@ -73,7 +73,7 @@ const DeleteReviews = () => {
     setError(null);
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("يجب تسجيل الدخول أولاً");
+      if (!token) throw new Error("You must be logged in first");
 
       const response = await fetch(
         `https://skillbridge.runasp.net/api/Reviews/${courseId}`,
@@ -85,7 +85,7 @@ const DeleteReviews = () => {
       );
 
       if (!response.ok) {
-        throw new Error(`خطأ في جلب التعليقات: ${response.status}`);
+        throw new Error(`Error fetching reviews: ${response.status}`);
       }
 
       const data = await response.json();
@@ -101,14 +101,14 @@ const DeleteReviews = () => {
 
   const handleDeleteReview = async (reviewId) => {
     const confirm = await Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "لن تتمكن من استرجاع التعليق بعد حذفه!",
+      title: "Are you sure?",
+      text: "You won't be able to recover this review once deleted!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "نعم، احذفه",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
       reverseButtons: true
     });
 
@@ -116,7 +116,7 @@ const DeleteReviews = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          Swal.fire("انتهت الجلسة", "يجب تسجيل الدخول مرة أخرى", "error");
+          Swal.fire("Session expired", "You need to log in again", "error");
           return;
         }
 
@@ -134,16 +134,16 @@ const DeleteReviews = () => {
         console.log("Delete response:", response);
 
         if (response.status === 204 || response.status === 200) {
-          Swal.fire("تم الحذف!", "تم حذف التعليق بنجاح", "success");
+          Swal.fire("Deleted!", "The review has been deleted successfully", "success");
           fetchReviews(selectedCourse);
         } else {
           const errorData = await response.json().catch(() => ({}));
           console.error("Delete error details:", errorData);
-          throw new Error(errorData.message || "فشل في حذف التعليق");
+          throw new Error(errorData.message || "Failed to delete the review");
         }
       } catch (error) {
         console.error("Delete error:", error);
-        Swal.fire("خطأ", error.message || "حدث خطأ أثناء محاولة الحذف", "error");
+        Swal.fire("Error", error.message || "An error occurred while attempting to delete", "error");
       }
     }
   };
@@ -152,7 +152,7 @@ const DeleteReviews = () => {
     return (
       <div className={classes.loadingContainer}>
         <div className={classes.spinner}></div>
-        <p>جاري تحميل الكورسات...</p>
+        <p>Loading courses...</p>
       </div>
     );
   }
@@ -161,13 +161,13 @@ const DeleteReviews = () => {
     return (
       <div className={classes.errorContainer}>
         <div className={classes.errorIcon}>!</div>
-        <h3>حدث خطأ</h3>
+        <h3>Error occurred</h3>
         <p>{error}</p>
         <button
           onClick={() => window.location.reload()}
           className={classes.retryButton}
         >
-          إعادة المحاولة
+          Retry
         </button>
       </div>
     );
@@ -177,13 +177,13 @@ const DeleteReviews = () => {
     <div className={classes.container}>
       <div className={classes.form}>
         <div className={classes.SelectCourse}>
-          <label>اختر الكورس:</label>
+          <label>Select Course:</label>
           <select
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
             className={classes.selectInput}
           >
-            <option value="">اختر كورس</option>
+            <option value="">Select a course</option>
             {courses.map((course) => (
               <option key={course.id} value={course.id}>
                 {course.title} (ID: {course.id})
@@ -194,14 +194,14 @@ const DeleteReviews = () => {
 
         {selectedCourse && (
           <div className={classes.reviewsContainer}>
-            <h3>تعليقات الكورس</h3>
+            <h3>Course Reviews</h3>
             {reviewsLoading ? (
               <div className={classes.loadingContainer}>
                 <div className={classes.smallSpinner}></div>
-                <p>جاري تحميل التعليقات...</p>
+                <p>Loading reviews...</p>
               </div>
             ) : reviews.length === 0 ? (
-              <p>لا توجد تعليقات لهذا الكورس</p>
+              <p>No reviews for this course</p>
             ) : (
               <div className={classes.reviewsList}>
                 {reviews.map((review) => (
@@ -219,10 +219,10 @@ const DeleteReviews = () => {
                           {review.userName}
                         </span>
                         <span className={classes.reviewRating}>
-                          التقييم: {review.rating}/5
+                          Rating: {review.rating}/5
                         </span>
                         <span className={classes.reviewDate}>
-                          {new Date(review.createdAt).toLocaleDateString('ar-EG')}
+                          {new Date(review.createdAt).toLocaleDateString('en-US')}
                         </span>
                       </div>
                     </div>
@@ -231,7 +231,7 @@ const DeleteReviews = () => {
                       onClick={() => handleDeleteReview(review.id)}
                       className={classes.deleteButton}
                     >
-                      حذف التعليق
+                      Delete Review
                     </button>
                   </div>
                 ))}

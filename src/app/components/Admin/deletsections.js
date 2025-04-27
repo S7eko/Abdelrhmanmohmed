@@ -16,7 +16,7 @@ const DeleteSections = () => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) throw new Error("يجب تسجيل الدخول أولاً");
+        if (!token) throw new Error("You must log in first");
 
         const response = await fetch(
           "https://skillbridge.runasp.net/api/Courses?pageIndex=1&pageSize=1000",
@@ -30,7 +30,7 @@ const DeleteSections = () => {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || `خطأ في جلب الكورسات: ${response.status}`);
+          throw new Error(errorData.message || `Error fetching courses: ${response.status}`);
         }
 
         const data = await response.json();
@@ -41,8 +41,8 @@ const DeleteSections = () => {
 
         if (error.message.includes("401")) {
           Swal.fire({
-            title: "انتهت الجلسة",
-            text: "يجب تسجيل الدخول مرة أخرى",
+            title: "Session Expired",
+            text: "You must log in again",
             icon: "error",
           }).then(() => {
             localStorage.removeItem("token");
@@ -70,7 +70,7 @@ const DeleteSections = () => {
     setError(null);
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("يجب تسجيل الدخول أولاً");
+      if (!token) throw new Error("You must log in first");
 
       const response = await fetch(
         `https://skillbridge.runasp.net/api/Lectures/${courseId}`,
@@ -88,7 +88,7 @@ const DeleteSections = () => {
           return;
         }
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `خطأ في جلب السكاشن: ${response.status}`);
+        throw new Error(errorData.message || `Error fetching sections: ${response.status}`);
       }
 
       const data = await response.json();
@@ -111,12 +111,12 @@ const DeleteSections = () => {
 
   const handleDeleteSection = async (sectionId) => {
     const confirm = await Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "لن تتمكن من استرجاع القسم بعد حذفه!",
+      title: "Are you sure?",
+      text: "You won't be able to recover this section after deletion!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "نعم، احذفه",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
     });
@@ -124,7 +124,7 @@ const DeleteSections = () => {
     if (confirm.isConfirmed) {
       try {
         const token = localStorage.getItem("token");
-        if (!token) throw new Error("انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى");
+        if (!token) throw new Error("Session expired, please log in again");
 
         const response = await fetch(
           `https://skillbridge.runasp.net/api/Admin/sections/${sectionId}`,
@@ -139,12 +139,12 @@ const DeleteSections = () => {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || "فشل في حذف القسم");
+          throw new Error(errorData.message || "Failed to delete the section");
         }
 
         Swal.fire({
-          title: "تم الحذف!",
-          text: "تم حذف القسم بنجاح",
+          title: "Deleted!",
+          text: "The section was deleted successfully",
           icon: "success",
           timer: 1500,
           showConfirmButton: false,
@@ -154,7 +154,7 @@ const DeleteSections = () => {
       } catch (error) {
         console.error("Delete section error:", error);
         Swal.fire({
-          title: "خطأ!",
+          title: "Error!",
           text: error.message,
           icon: "error",
         });
@@ -164,12 +164,12 @@ const DeleteSections = () => {
 
   const handleDeleteLecture = async (lectureId) => {
     const confirm = await Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "لن تتمكن من استرجاع المحاضرة بعد حذفها!",
+      title: "Are you sure?",
+      text: "You won't be able to recover this lecture after deletion!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "نعم، احذفها",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
     });
@@ -177,7 +177,7 @@ const DeleteSections = () => {
     if (confirm.isConfirmed) {
       try {
         const token = localStorage.getItem("token");
-        if (!token) throw new Error("انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى");
+        if (!token) throw new Error("Session expired, please log in again");
 
         const response = await fetch(
           `https://skillbridge.runasp.net/api/Admin/lectures/${lectureId}`,
@@ -192,12 +192,12 @@ const DeleteSections = () => {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || "فشل في حذف المحاضرة");
+          throw new Error(errorData.message || "Failed to delete the lecture");
         }
 
         Swal.fire({
-          title: "تم الحذف!",
-          text: "تم حذف المحاضرة بنجاح",
+          title: "Deleted!",
+          text: "The lecture was deleted successfully",
           icon: "success",
           timer: 1500,
           showConfirmButton: false,
@@ -207,7 +207,7 @@ const DeleteSections = () => {
       } catch (error) {
         console.error("Delete lecture error:", error);
         Swal.fire({
-          title: "خطأ!",
+          title: "Error!",
           text: error.message,
           icon: "error",
         });
@@ -218,7 +218,7 @@ const DeleteSections = () => {
   if (isLoading) {
     return (
       <div className={classes.loadingContainer}>
-        <p>جاري تحميل الكورسات...</p>
+        <p>Loading courses...</p>
       </div>
     );
   }
@@ -228,7 +228,7 @@ const DeleteSections = () => {
       <div className={classes.errorContainer}>
         <p>{error}</p>
         <button onClick={() => window.location.reload()} className={classes.retryButton}>
-          إعادة المحاولة
+          Retry
         </button>
       </div>
     );
@@ -238,13 +238,13 @@ const DeleteSections = () => {
     <div className={classes.container}>
       <div className={classes.form}>
         <div className={classes.SelectCourse}>
-          <label>اختر الكورس:</label>
+          <label>Select Course:</label>
           <select
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
             className={classes.selectInput}
           >
-            <option value="">اختر كورس</option>
+            <option value="">Select a course</option>
             {courses.map((course) => (
               <option key={course.id} value={course.id}>
                 {course.title}
@@ -257,27 +257,27 @@ const DeleteSections = () => {
           <>
             {loadingSections ? (
               <div className={classes.loadingContainer}>
-                <p>جاري تحميل السكاشن والمحاضرات...</p>
+                <p>Loading sections and lectures...</p>
               </div>
             ) : sections.length === 0 ? (
-              <p>لا توجد أقسام</p>
+              <p>No sections available</p>
             ) : (
               sections.map((section) => (
                 <div key={section.id} className={classes.sectionItem}>
                   <div className={classes.sectionHeader}>
-                    <h4>{section.name || `القسم ${section.id}`}</h4>
+                    <h4>{section.name || `Section ${section.id}`}</h4>
                     <div className={classes.sectionActions}>
                       <button
                         onClick={() => toggleSection(section.id)}
                         className={classes.toggleButton}
                       >
-                        {expandedSections.includes(section.id) ? "إخفاء المحاضرات" : "عرض المحاضرات"}
+                        {expandedSections.includes(section.id) ? "Hide lectures" : "Show lectures"}
                       </button>
                       <button
                         onClick={() => handleDeleteSection(section.id)}
                         className={classes.deleteButton}
                       >
-                        حذف القسم
+                        Delete Section
                       </button>
                     </div>
                   </div>
@@ -293,13 +293,13 @@ const DeleteSections = () => {
                                 onClick={() => handleDeleteLecture(lecture.id)}
                                 className={classes.deleteLectureButton}
                               >
-                                حذف المحاضرة
+                                Delete Lecture
                               </button>
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className={classes.noLectures}>لا توجد محاضرات في هذا القسم</p>
+                        <p className={classes.noLectures}>No lectures in this section</p>
                       )}
                     </div>
                   )}

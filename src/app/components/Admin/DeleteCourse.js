@@ -7,7 +7,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Swal from "sweetalert2";
 import Loader from "../Loader";
 
-const DeletCourse = () => {
+const DeleteCourse = () => {
   const [courses, setCourses] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(6);
@@ -48,40 +48,40 @@ const DeletCourse = () => {
 
   const handleDeleteCourse = async (id) => {
     const confirmDelete = await Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "لن تتمكن من التراجع عن هذا!",
+      title: "Are you sure?",
+      text: "You will not be able to revert this!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "نعم، احذفه!",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
     });
 
     if (!confirmDelete.isConfirmed) return;
 
     try {
-      const token = localStorage.getItem("token"); // الحصول على token من localStorage
+      const token = localStorage.getItem("token"); // Get token from localStorage
 
       if (!token) {
-        throw new Error("يجب تسجيل الدخول أولاً");
+        throw new Error("You must be logged in first");
       }
 
       const response = await fetch(`https://skillbridge.runasp.net/api/Courses/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // إضافة token إلى headers
+          Authorization: `Bearer ${token}`, // Add token to headers
         },
       });
 
       if (!response.ok) {
-        throw new Error("فشل في حذف الكورس");
+        throw new Error("Failed to delete course");
       }
 
       setCourses((prevCourses) => prevCourses.filter((course) => course.id !== id));
 
-      // إعادة تحميل الدورات بعد الحذف
+      // Reload courses after deletion
       const fetchNewCourses = async () => {
         const newResponse = await fetch(
           `https://skillbridge.runasp.net/api/courses?pageIndex=${page}&pageSize=${pageSize}`
@@ -94,18 +94,18 @@ const DeletCourse = () => {
       fetchNewCourses();
 
       Swal.fire({
-        title: "تم الحذف!",
-        text: "تم حذف الكورس بنجاح.",
+        title: "Deleted!",
+        text: "The course has been deleted successfully.",
         icon: "success",
-        confirmButtonText: "حسنًا",
+        confirmButtonText: "Okay",
       });
     } catch (error) {
-      console.error("خطأ أثناء الحذف:", error);
+      console.error("Error during deletion:", error);
       Swal.fire({
-        title: "خطأ!",
-        text: error.message || "حدث خطأ أثناء الحذف.",
+        title: "Error!",
+        text: error.message || "An error occurred while deleting.",
         icon: "error",
-        confirmButtonText: "حسنًا",
+        confirmButtonText: "Okay",
       });
     }
   };
@@ -132,7 +132,7 @@ const DeletCourse = () => {
             </div>
           </div>
 
-          {/* زر الثلاث نقاط */}
+          {/* Three dots button */}
           <div className={classes.menuWrapper}>
             <button
               className={classes.menuButton}
@@ -141,17 +141,17 @@ const DeletCourse = () => {
               <BsThreeDotsVertical />
             </button>
 
-            {/* القائمة المنسدلة */}
+            {/* Dropdown menu */}
             {menuOpen === course.id && (
               <div className={classes.dropdownMenu}>
-                <button onClick={() => handleDeleteCourse(course.id)}>حذف</button>
+                <button onClick={() => handleDeleteCourse(course.id)}>Delete</button>
               </div>
             )}
           </div>
         </div>
       ))}
 
-      {/* أزرار التنقل بين الصفحات */}
+      {/* Pagination buttons */}
       <div className={classes.pagination}>
         <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
           Previous
@@ -163,4 +163,4 @@ const DeletCourse = () => {
   );
 };
 
-export default DeletCourse;
+export default DeleteCourse;
