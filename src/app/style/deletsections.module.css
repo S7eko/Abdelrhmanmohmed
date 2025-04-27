@@ -1,78 +1,44 @@
-/* التصميم العام */
 .container {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  padding: 2rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  font-family: 'Cairo', sans-serif;
 }
 
 .form {
-  background-color: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: auto;
+  background: white;
   padding: 2rem;
-  margin-top: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* عناصر النموذج */
 .SelectCourse {
   margin-bottom: 2rem;
 }
 
-.SelectCourse label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #2b2d42;
-}
-
 .selectInput {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #dee2e6;
-  border-radius: 0.25rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background-color: #f3f4f6;
   font-size: 1rem;
-  transition: all 0.15s ease;
-  background-color: #f8f9fa;
 }
 
-.selectInput:focus {
-  outline: none;
-  border-color: #4361ee;
-  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.25);
-}
-
-/* قسم الأقسام */
-.sectionsContainer {
+.sectionsContainer,
+.lecturesContainer {
   margin-top: 2rem;
-  border-top: 1px solid #eee;
-  padding-top: 1.5rem;
-}
-
-.sectionsContainer h3 {
-  color: #2b2d42;
-  margin-bottom: 1.5rem;
-  font-size: 1.25rem;
-}
-
-.sectionsList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }
 
 .sectionItem {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
   padding: 1rem;
-  margin-bottom: 1rem;
-  transition: all 0.15s ease;
-  border: 1px solid #eee;
-}
-
-.sectionItem:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  margin-bottom: 1.5rem;
+  background-color: #ffffff;
 }
 
 .sectionHeader {
@@ -81,57 +47,88 @@
   align-items: center;
 }
 
-.sectionHeader h4 {
-  margin: 0;
-  color: #2b2d42;
-  font-size: 1.1rem;
+.sectionActions {
+  display: flex;
+  gap: 0.5rem;
 }
 
-/* الأزرار */
-.deleteButton {
-  background-color: #f72585;
+.toggleButton,
+.deleteButton,
+.deleteLectureButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.toggleButton {
+  background-color: #3b82f6;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.15s ease;
+}
+
+.toggleButton:hover {
+  background-color: #2563eb;
+}
+
+.deleteButton {
+  background-color: #ef4444;
+  color: white;
+  border: none;
 }
 
 .deleteButton:hover {
-  background-color: #e5177e;
-  transform: translateY(-1px);
+  background-color: #dc2626;
 }
 
-.deleteButton:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.lecturesList {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 1rem;
 }
 
-/* حالات التحميل */
+.lectureItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.lectureItem:last-child {
+  border-bottom: none;
+}
+
+.noLectures,
+.noSections {
+  text-align: center;
+  color: #6b7280;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
 .loadingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   padding: 2rem;
 }
 
-.spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 4px solid rgba(67, 97, 238, 0.2);
+.spinner,
+.smallSpinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
   border-radius: 50%;
-  border-top-color: #4361ee;
-  animation: spin 1s ease-in-out infinite;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
 
 .smallSpinner {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-width: 3px;
+  width: 30px;
+  height: 30px;
 }
 
 @keyframes spin {
@@ -140,53 +137,33 @@
   }
 }
 
-/* رسائل الخطأ */
 .errorContainer {
   text-align: center;
   padding: 2rem;
-  background-color: #fff5f5;
-  border-radius: 0.5rem;
-  border: 1px solid #ffd6d6;
-  max-width: 500px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-radius: 10px;
+  max-width: 600px;
   margin: 2rem auto;
 }
 
-.errorIcon {
-  font-size: 2.5rem;
-  color: #f72585;
-  margin-bottom: 1rem;
-}
-
-.errorContainer h3 {
-  color: #e5177e;
-  margin-bottom: 0.5rem;
-}
-
-.errorContainer p {
-  color: #6c757d;
-  margin-bottom: 1.5rem;
-}
-
 .retryButton {
-  background-color: #4361ee;
+  margin-top: 1rem;
+  background-color: #3b82f6;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 0.25rem;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  font-weight: 500;
-  transition: all 0.15s ease;
 }
 
 .retryButton:hover {
-  background-color: #3a56d4;
+  background-color: #2563eb;
 }
 
-/* حالة عدم وجود أقسام */
-.noSections {
-  text-align: center;
-  color: #6c757d;
-  padding: 1.5rem;
-  background-color: #f8f9fa;
-  border-radius: 0.5rem;
+.errorIcon {
+  font-size: 3rem;
+  color: #b91c1c;
+  margin-bottom: 1rem;
 }
