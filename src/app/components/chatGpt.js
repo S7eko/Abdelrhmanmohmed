@@ -1,54 +1,54 @@
 "use client";
 import React, { useState } from "react";
-import styles from "../style/Chatbot.module.css"; // أنماط CSS
-import { FaCommentDots } from "react-icons/fa"; // أيقونة الدردشة
+import styles from "../style/Chatbot.module.css";
+import { FaCommentDots } from "react-icons/fa";
 
 const Chatbot = () => {
-  const [messages, setMessages] = useState([]); // تخزين الرسائل
-  const [input, setInput] = useState(""); // نص المدخلات
-  const [isLoading, setIsLoading] = useState(false); // حالة التحميل
-  const [showChatbot, setShowChatbot] = useState(false); // حالة ظهور/اختفاء الـ Chatbot
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
 
-  // إرسال الرسالة إلى OpenRouter API
   const sendMessage = async () => {
-    if (!input.trim()) return; // تجاهل المدخلات الفارغة
+    if (!input.trim()) return;
 
-    // إضافة رسالة المستخدم إلى القائمة
     const userMessage = { text: input, sender: "user" };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
     try {
-      // إرسال الطلب إلى OpenRouter API
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      const response = await fetch("https://skillbridge.runasp.net/api/ChatBot/ask", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer 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", // استبدل بـ API Key الخاص بك
-          "HTTP-Referer": "https://www.sitename.com", // Optional. Site URL for rankings on openrouter.ai.
-          "X-Title": "SiteName", // Optional. Site title for rankings on openrouter.ai.
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          "model": "deepseek/deepseek-r1:free",
-          "messages": [
-            {
-              "role": "user",
-              "content": input
-            }
-          ]
+          prompt: input
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("API Error:", errorData);
-        throw new Error(`API Error: ${errorData.error || "Unknown error"}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      // First get the response as text
+      const responseText = await response.text();
+
+      // Try to parse as JSON, otherwise use as plain text
+      let botResponse;
+      try {
+        const jsonData = JSON.parse(responseText);
+        botResponse = jsonData.response || jsonData.message || jsonData;
+        if (typeof botResponse !== 'string') {
+          botResponse = JSON.stringify(botResponse);
+        }
+      } catch {
+        botResponse = responseText;
+      }
+
       const botMessage = {
-        text: data.choices[0].message.content,
+        text: botResponse,
         sender: "bot",
       };
       setMessages((prev) => [...prev, botMessage]);
@@ -65,7 +65,6 @@ const Chatbot = () => {
 
   return (
     <>
-      {/* أيقونة الدردشة */}
       <div
         className={styles.chatIcon}
         onClick={() => setShowChatbot(!showChatbot)}
@@ -73,10 +72,8 @@ const Chatbot = () => {
         <FaCommentDots size={32} color="#fff" />
       </div>
 
-      {/* Chatbot */}
       {showChatbot && (
         <div className={styles.chatbotContainer}>
-          {/* زر الإغلاق */}
           <button
             className={styles.closeButton}
             onClick={() => setShowChatbot(false)}
