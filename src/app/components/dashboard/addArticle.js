@@ -27,11 +27,11 @@ const AddArticle = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       Swal.fire({
-        title: "تحذير",
-        text: "يجب تسجيل الدخول أولاً",
+        title: "Warning",
+        text: "You need to login first",
         icon: "warning",
-        confirmButtonText: "تسجيل الدخول",
-        cancelButtonText: "إلغاء",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
         showCancelButton: true
       }).then((result) => {
         if (result.isConfirmed) {
@@ -52,22 +52,22 @@ const AddArticle = () => {
     };
 
     if (!articleData.title.trim()) {
-      newErrors.title = "العنوان مطلوب";
+      newErrors.title = "Title is required";
       isValid = false;
     }
 
     articleData.contentBlocks.forEach((block, index) => {
       if (!block.text.trim()) {
-        newErrors.contentBlocks[index] = "محتوى الفقرة مطلوب";
+        newErrors.contentBlocks[index] = "Content is required";
         isValid = false;
       }
     });
 
     if (!imageFile) {
-      newErrors.image = "صورة المقال مطلوبة";
+      newErrors.image = "Article image is required";
       isValid = false;
     } else if (imageFile.size > 2 * 1024 * 1024) {
-      newErrors.image = "حجم الصورة يجب ألا يتجاوز 2MB";
+      newErrors.image = "Image size should not exceed 2MB";
       isValid = false;
     }
 
@@ -122,13 +122,13 @@ const AddArticle = () => {
       }
 
       await Swal.fire({
-        title: "تم بنجاح!",
-        text: "تم نشر المقال بنجاح",
+        title: "Success!",
+        text: "Article published successfully",
         icon: "success",
-        confirmButtonText: "حسناً"
+        confirmButtonText: "OK"
       });
 
-      // إعادة تعيين النموذج بعد النجاح
+      // Reset form after success
       setArticleData({
         title: "",
         category: "",
@@ -144,10 +144,10 @@ const AddArticle = () => {
       console.error("Submission error:", error);
 
       Swal.fire({
-        title: "خطأ!",
-        text: error.message || "حدث خطأ أثناء محاولة نشر المقال",
+        title: "Error!",
+        text: error.message || "An error occurred while publishing the article",
         icon: "error",
-        confirmButtonText: "حسناً"
+        confirmButtonText: "OK"
       });
     } finally {
       setIsSubmitting(false);
@@ -164,7 +164,7 @@ const AddArticle = () => {
     const file = e.target.files[0];
     if (file && file.type.match(/image\/(jpeg|jpg|png)/)) {
       if (file.size > 2 * 1024 * 1024) {
-        Swal.fire("خطأ!", "حجم الصورة يجب ألا يتجاوز 2MB", "error");
+        Swal.fire("Error!", "Image size should not exceed 2MB", "error");
         return;
       }
       setImageFile(file);
@@ -173,7 +173,7 @@ const AddArticle = () => {
       reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     } else {
-      Swal.fire("خطأ!", "يرجى اختيار صورة بصيغة JPG أو PNG", "error");
+      Swal.fire("Error!", "Please select an image in JPG or PNG format", "error");
     }
   };
 
@@ -209,7 +209,7 @@ const AddArticle = () => {
 
   const removeContentBlock = (index) => {
     if (articleData.contentBlocks.length <= 1) {
-      Swal.fire("تحذير!", "يجب أن يحتوي المقال على فقرة واحدة على الأقل", "warning");
+      Swal.fire("Warning!", "Article must contain at least one paragraph", "warning");
       return;
     }
     const newBlocks = [...articleData.contentBlocks];
@@ -220,12 +220,12 @@ const AddArticle = () => {
   return (
     <div className={classes.container_center}>
       <div className={classes.add_course}>
-        <h2>إضافة مقال جديد</h2>
+        <h2>Add New Article</h2>
 
         <form onSubmit={handleSubmit} encType="multipart/form-data">
-          {/* العنوان */}
+          {/* Title */}
           <div className={`${classes.form_group} ${errors.title ? classes.has_error : ""}`}>
-            <label htmlFor="title">عنوان المقال *</label>
+            <label htmlFor="title">Article Title *</label>
             <input
               type="text"
               id="title"
@@ -233,15 +233,15 @@ const AddArticle = () => {
               value={articleData.title}
               onChange={handleChange}
               disabled={isSubmitting}
-              placeholder="أدخل عنوان المقال"
+              placeholder="Enter article title"
               className={errors.title ? classes.error_border : ""}
             />
             {errors.title && <span className={classes.error_message}>{errors.title}</span>}
           </div>
 
-          {/* التصنيف */}
+          {/* Category */}
           <div className={classes.form_group}>
-            <label htmlFor="category">التصنيف *</label>
+            <label htmlFor="category">Category *</label>
             <select
               id="category"
               name="category"
@@ -249,23 +249,23 @@ const AddArticle = () => {
               onChange={handleChange}
               disabled={isSubmitting}
             >
-              <option value="">اختر التصنيف</option>
-              <option value="Web Development">تطوير الويب</option>
-              <option value="Mobile Development">تطوير التطبيقات</option>
-              <option value="Artificial Intelligence">الذكاء الاصطناعي</option>
-              <option value="Data Science">علوم البيانات</option>
-              <option value="Machine Learning">التعلم الآلي</option>
-              <option value="Cybersecurity">الأمن السيبراني</option>
-              <option value="Game Development">تطوير الألعاب</option>
-              <option value="Cloud Computing">الحوسبة السحابية</option>
-              <option value="Blockchain">البلوك تشين</option>
-              <option value="Software Engineering">هندسة البرمجيات</option>
+              <option value="">Select category</option>
+              <option value="Web Development">Web Development</option>
+              <option value="Mobile Development">Mobile Development</option>
+              <option value="Artificial Intelligence">Artificial Intelligence</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Machine Learning">Machine Learning</option>
+              <option value="Cybersecurity">Cybersecurity</option>
+              <option value="Game Development">Game Development</option>
+              <option value="Cloud Computing">Cloud Computing</option>
+              <option value="Blockchain">Blockchain</option>
+              <option value="Software Engineering">Software Engineering</option>
             </select>
           </div>
 
-          {/* صورة المقال */}
+          {/* Article Image */}
           <div className={`${classes.form_group} ${errors.image ? classes.has_error : ""}`}>
-            <label htmlFor="image">صورة المقال الرئيسية *</label>
+            <label htmlFor="image">Article Image *</label>
             <div className={classes.file_input_container}>
               <input
                 type="file"
@@ -277,41 +277,41 @@ const AddArticle = () => {
                 className={errors.image ? classes.error_border : ""}
               />
               <label htmlFor="image" className={classes.file_input_label}>
-                {imageFile ? imageFile.name : "اختر صورة (JPG/PNG - 2MB كحد أقصى)"}
+                {imageFile ? imageFile.name : "Choose image (JPG/PNG - Max 2MB)"}
               </label>
             </div>
             {errors.image && <span className={classes.error_message}>{errors.image}</span>}
             {imagePreview && (
               <div className={classes.image_preview}>
-                <img src={imagePreview} alt="معاينة الصورة" />
+                <img src={imagePreview} alt="Image preview" />
               </div>
             )}
           </div>
 
-          {/* الملخص */}
+          {/* Excerpt */}
           <div className={classes.form_group}>
-            <label htmlFor="excerpt">ملخص المقال</label>
+            <label htmlFor="excerpt">Article Excerpt</label>
             <textarea
               id="excerpt"
               name="excerpt"
               value={articleData.excerpt}
               onChange={handleChange}
               disabled={isSubmitting}
-              placeholder="أدخل ملخصاً للمقال"
+              placeholder="Enter article excerpt"
               rows="5"
             />
           </div>
 
-          {/* الفقرات */}
+          {/* Content Blocks */}
           <div className={classes.form_group}>
-            <label>فقرات المحتوى *</label>
+            <label>Content Paragraphs *</label>
             {articleData.contentBlocks.map((block, index) => (
               <div key={index} className={`${classes.content_block_container} ${errors.contentBlocks[index] ? classes.has_error : ""}`}>
                 <textarea
                   value={block.text}
                   onChange={(e) => handleContentBlockChange(index, e)}
                   disabled={isSubmitting}
-                  placeholder={`فقرة ${index + 1}`}
+                  placeholder={`Paragraph ${index + 1}`}
                   rows="3"
                   className={errors.contentBlocks[index] ? classes.error_border : ""}
                 />
@@ -321,9 +321,9 @@ const AddArticle = () => {
                   </span>
                 )}
 
-                {/* صورة اختيارية لكل فقرة */}
+                {/* Optional image for each paragraph */}
                 <div className={classes.form_group}>
-                  <label htmlFor={`blockImage-${index}`}>صورة الفقرة (اختياري)</label>
+                  <label htmlFor={`blockImage-${index}`}>Paragraph Image (optional)</label>
                   <input
                     type="file"
                     id={`blockImage-${index}`}
@@ -334,13 +334,13 @@ const AddArticle = () => {
                       if (file && file.type.match(/image\/(jpeg|jpg|png)/)) {
                         handleContentBlockImageChange(index, file);
                       } else {
-                        Swal.fire("خطأ!", "الرجاء اختيار صورة بصيغة JPG أو PNG", "error");
+                        Swal.fire("Error!", "Please select an image in JPG or PNG format", "error");
                       }
                     }}
                   />
                   {block.imagePreview && (
                     <div className={classes.image_preview}>
-                      <img src={block.imagePreview} alt={`معاينة الفقرة ${index}`} />
+                      <img src={block.imagePreview} alt={`Paragraph ${index} preview`} />
                     </div>
                   )}
                 </div>
@@ -352,7 +352,7 @@ const AddArticle = () => {
                     className={classes.remove_button}
                     disabled={isSubmitting}
                   >
-                    حذف الفقرة
+                    Remove Paragraph
                   </button>
                 )}
               </div>
@@ -363,11 +363,11 @@ const AddArticle = () => {
               className={classes.add_button}
               disabled={isSubmitting}
             >
-              إضافة فقرة جديدة
+              Add New Paragraph
             </button>
           </div>
 
-          {/* زر الإرسال */}
+          {/* Submit Button */}
           <div className={classes.form_actions}>
             <button
               type="submit"
@@ -377,10 +377,10 @@ const AddArticle = () => {
               {isSubmitting ? (
                 <>
                   <FaSpinner className={classes.spinner_icon} />
-                  جاري النشر...
+                  Publishing...
                 </>
               ) : (
-                "نشر المقال"
+                "Publish Article"
               )}
             </button>
           </div>
