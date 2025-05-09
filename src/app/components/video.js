@@ -21,6 +21,7 @@ const Video = () => {
   const [downloadingFile, setDownloadingFile] = useState(null);
   const [hasVideoError, setHasVideoError] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [hasShownCompletion, setHasShownCompletion] = useState(false);
 
   // Constants
   const API_BASE_URL = "https://skillbridge.runasp.net";
@@ -30,6 +31,11 @@ const Video = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const courseId = searchParams.get("id");
+
+  // Reset completion message when course changes
+  useEffect(() => {
+    setHasShownCompletion(false);
+  }, [courseId]);
 
   // Fetch course details and sections
   useEffect(() => {
@@ -75,6 +81,16 @@ const Video = () => {
           // Update progress state
           if (sectionsData.progress !== undefined) {
             setProgress(sectionsData.progress);
+
+            // Show completion message if progress reaches 100% for the first time
+            if (sectionsData.progress === 100 && !hasShownCompletion) {
+              Swal.fire({
+                title: "Congratulations!",
+                text: "You've completed this course!",
+                icon: "success"
+              });
+              setHasShownCompletion(true);
+            }
           }
 
           if (sectionsData.sections && Array.isArray(sectionsData.sections)) {
@@ -116,7 +132,7 @@ const Video = () => {
         router.push("/courses");
       });
     }
-  }, [courseId, router]);
+  }, [courseId, router, hasShownCompletion]);
 
   // Handle PDF download
   const handlePdfDownload = (pdfFile) => {
@@ -198,13 +214,14 @@ const Video = () => {
       if (sectionsData.progress !== undefined) {
         setProgress(sectionsData.progress);
 
-        // Show completion message if progress reaches 100%
-        if (sectionsData.progress === 100) {
+        // Show completion message if progress reaches 100% for the first time
+        if (sectionsData.progress === 100 && !hasShownCompletion) {
           Swal.fire({
             title: "Congratulations!",
             text: "You've completed this course!",
             icon: "success"
           });
+          setHasShownCompletion(true);
         }
       }
 
@@ -281,6 +298,16 @@ const Video = () => {
           const sectionsData = await sectionsResponse.json();
           if (sectionsData.progress !== undefined) {
             setProgress(sectionsData.progress);
+
+            // Show completion message if progress reaches 100% for the first time
+            if (sectionsData.progress === 100 && !hasShownCompletion) {
+              Swal.fire({
+                title: "Congratulations!",
+                text: "You've completed this course!",
+                icon: "success"
+              });
+              setHasShownCompletion(true);
+            }
           }
         }
       } catch (error) {
@@ -324,21 +351,17 @@ const Video = () => {
       ) : (
         <div>
           {/* Progress Bar Section */}
-          
-            
-
-            <div className={styles.container}>
-              
-              <div className={styles.moduleList}>
-                <div className={styles.progressSection}>
-                  <div className={styles.progressContainer}>
-                    <div
-                      className={styles.progressFill}
-                      style={{ width: `${progress}%` }}
-                    ></div>
-                  </div>
-                  <span className={styles.progressText}>{progress}% Complete</span>
+          <div className={styles.container}>
+            <div className={styles.moduleList}>
+              <div className={styles.progressSection}>
+                <div className={styles.progressContainer}>
+                  <div
+                    className={styles.progressFill}
+                    style={{ width: `${progress}%` }}
+                  ></div>
                 </div>
+                <span className={styles.progressText}>{progress}% Complete</span>
+              </div>
               {sections.length === 0 ? (
                 <p>No sections available for this course.</p>
               ) : (

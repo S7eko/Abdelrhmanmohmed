@@ -9,7 +9,7 @@ const AddArticle = () => {
     title: "",
     category: "",
     excerpt: "",
-    contentBlocks: [{ type: "text", text: "" }],
+    contentBlocks: [{ type: "text", text: "", imageFile: null, imagePreview: "" }],
     publishDate: new Date().toISOString().slice(0, 16),
     readTime: 5,
   });
@@ -60,7 +60,7 @@ const AddArticle = () => {
       if (!block.text.trim()) {
         newErrors.contentBlocks[index] = "محتوى الفقرة مطلوب";
         isValid = false;
-      } 
+      }
     });
 
     if (!imageFile) {
@@ -75,50 +75,40 @@ const AddArticle = () => {
     return isValid;
   };
 
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      // Prepare form data according to API requirements
       const formData = new FormData();
       formData.append("Title", articleData.title.trim());
       formData.append("Category", articleData.category);
       formData.append("Image", imageFile);
       formData.append("Excerpt", articleData.excerpt.trim());
+      formData.append("PublishDate", new Date(articleData.publishDate).toISOString());
+      formData.append("ReadTime", articleData.readTime.toString());
 
       articleData.contentBlocks.forEach((block, index) => {
         formData.append(`ContentBlocks[${index}].Type`, "text");
         formData.append(`ContentBlocks[${index}].Text`, block.text.trim());
-      });
 
-      formData.append("PublishDate", new Date(articleData.publishDate).toISOString());
-      formData.append("ReadTime", articleData.readTime.toString());
+        if (block.imageFile) {
+          formData.append(`ContentBlocks[${index}].Image`, block.imageFile);
+        }
+      });
 
       const token = localStorage.getItem("token");
       const response = await fetch("https://skillbridge.runasp.net/api/Blogs", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
-      // Handle both JSON and text responses
       let responseData;
       const responseText = await response.text();
       try {
@@ -138,20 +128,24 @@ const AddArticle = () => {
         confirmButtonText: "حسناً"
       });
 
+      // إعادة تعيين النموذج بعد النجاح
+      setArticleData({
+        title: "",
+        category: "",
+        excerpt: "",
+        contentBlocks: [{ type: "text", text: "", imageFile: null, imagePreview: "" }],
+        publishDate: new Date().toISOString().slice(0, 16),
+        readTime: 5,
+      });
+      setImageFile(null);
+      setImagePreview("");
+
     } catch (error) {
       console.error("Submission error:", error);
 
-      let errorMessage = "حدث خطأ أثناء محاولة نشر المقال";
-      if (error.message.includes("400")) {
-        errorMessage = "بيانات غير صالحة. يرجى التحقق من:";
-        errorMessage += "\n- أن جميع الحقول المطلوبة مملوءة";
-        errorMessage += "\n- أن الصورة بصيغة صالحة (JPG, PNG)";
-        errorMessage += "\n- أن تاريخ النشر صحيح";
-      }
-
       Swal.fire({
         title: "خطأ!",
-        text: errorMessage,
+        text: error.message || "حدث خطأ أثناء محاولة نشر المقال",
         icon: "error",
         confirmButtonText: "حسناً"
       });
@@ -163,58 +157,53 @@ const AddArticle = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setArticleData(prev => ({ ...prev, [name]: value }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Validate image type
-      if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
-        Swal.fire("خطأ!", "يجب اختيار صورة بصيغة JPG أو PNG", "error");
-        return;
-      }
-
-      // Validate image size
+    if (file && file.type.match(/image\/(jpeg|jpg|png)/)) {
       if (file.size > 2 * 1024 * 1024) {
         Swal.fire("خطأ!", "حجم الصورة يجب ألا يتجاوز 2MB", "error");
         return;
       }
-
       setImageFile(file);
       setErrors(prev => ({ ...prev, image: "" }));
-
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
+    } else {
+      Swal.fire("خطأ!", "يرجى اختيار صورة بصيغة JPG أو PNG", "error");
     }
   };
 
   const handleContentBlockChange = (index, e) => {
-    const newContentBlocks = [...articleData.contentBlocks];
-    newContentBlocks[index] = {
-      ...newContentBlocks[index],
-      text: e.target.value
-    };
-    setArticleData(prev => ({ ...prev, contentBlocks: newContentBlocks }));
-
-    // Clear error when user types
+    const newBlocks = [...articleData.contentBlocks];
+    newBlocks[index].text = e.target.value;
+    setArticleData(prev => ({ ...prev, contentBlocks: newBlocks }));
     if (errors.contentBlocks[index]) {
-      const newErrorBlocks = [...errors.contentBlocks];
-      newErrorBlocks[index] = "";
-      setErrors(prev => ({ ...prev, contentBlocks: newErrorBlocks }));
+      const updatedErrors = [...errors.contentBlocks];
+      updatedErrors[index] = "";
+      setErrors(prev => ({ ...prev, contentBlocks: updatedErrors }));
     }
+  };
+
+  const handleContentBlockImageChange = (index, file) => {
+    const newBlocks = [...articleData.contentBlocks];
+    newBlocks[index].imageFile = file;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      newBlocks[index].imagePreview = reader.result;
+      setArticleData(prev => ({ ...prev, contentBlocks: newBlocks }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const addContentBlock = () => {
     setArticleData(prev => ({
       ...prev,
-      contentBlocks: [...prev.contentBlocks, { type: "text", text: "" }]
+      contentBlocks: [...prev.contentBlocks, { type: "text", text: "", imageFile: null, imagePreview: "" }]
     }));
   };
 
@@ -223,9 +212,9 @@ const AddArticle = () => {
       Swal.fire("تحذير!", "يجب أن يحتوي المقال على فقرة واحدة على الأقل", "warning");
       return;
     }
-    const newContentBlocks = [...articleData.contentBlocks];
-    newContentBlocks.splice(index, 1);
-    setArticleData(prev => ({ ...prev, contentBlocks: newContentBlocks }));
+    const newBlocks = [...articleData.contentBlocks];
+    newBlocks.splice(index, 1);
+    setArticleData(prev => ({ ...prev, contentBlocks: newBlocks }));
   };
 
   return (
@@ -234,7 +223,7 @@ const AddArticle = () => {
         <h2>إضافة مقال جديد</h2>
 
         <form onSubmit={handleSubmit} encType="multipart/form-data">
-          {/* Title Field */}
+          {/* العنوان */}
           <div className={`${classes.form_group} ${errors.title ? classes.has_error : ""}`}>
             <label htmlFor="title">عنوان المقال *</label>
             <input
@@ -244,13 +233,13 @@ const AddArticle = () => {
               value={articleData.title}
               onChange={handleChange}
               disabled={isSubmitting}
-              placeholder="أدخل عنوان المقال "
+              placeholder="أدخل عنوان المقال"
               className={errors.title ? classes.error_border : ""}
             />
             {errors.title && <span className={classes.error_message}>{errors.title}</span>}
           </div>
 
-          {/* Category Field */}
+          {/* التصنيف */}
           <div className={classes.form_group}>
             <label htmlFor="category">التصنيف *</label>
             <select
@@ -259,7 +248,9 @@ const AddArticle = () => {
               value={articleData.category}
               onChange={handleChange}
               disabled={isSubmitting}
-            ><option value="Web Development">تطوير الويب</option>
+            >
+              <option value="">اختر التصنيف</option>
+              <option value="Web Development">تطوير الويب</option>
               <option value="Mobile Development">تطوير التطبيقات</option>
               <option value="Artificial Intelligence">الذكاء الاصطناعي</option>
               <option value="Data Science">علوم البيانات</option>
@@ -269,11 +260,10 @@ const AddArticle = () => {
               <option value="Cloud Computing">الحوسبة السحابية</option>
               <option value="Blockchain">البلوك تشين</option>
               <option value="Software Engineering">هندسة البرمجيات</option>
-            
             </select>
           </div>
 
-          {/* Image Field */}
+          {/* صورة المقال */}
           <div className={`${classes.form_group} ${errors.image ? classes.has_error : ""}`}>
             <label htmlFor="image">صورة المقال الرئيسية *</label>
             <div className={classes.file_input_container}>
@@ -298,7 +288,7 @@ const AddArticle = () => {
             )}
           </div>
 
-          {/* Excerpt Field */}
+          {/* الملخص */}
           <div className={classes.form_group}>
             <label htmlFor="excerpt">ملخص المقال</label>
             <textarea
@@ -312,7 +302,7 @@ const AddArticle = () => {
             />
           </div>
 
-          {/* Content Blocks */}
+          {/* الفقرات */}
           <div className={classes.form_group}>
             <label>فقرات المحتوى *</label>
             {articleData.contentBlocks.map((block, index) => (
@@ -321,7 +311,7 @@ const AddArticle = () => {
                   value={block.text}
                   onChange={(e) => handleContentBlockChange(index, e)}
                   disabled={isSubmitting}
-                  placeholder={`فقرة المحتوى ${index + 1} `}
+                  placeholder={`فقرة ${index + 1}`}
                   rows="3"
                   className={errors.contentBlocks[index] ? classes.error_border : ""}
                 />
@@ -330,6 +320,31 @@ const AddArticle = () => {
                     {errors.contentBlocks[index]}
                   </span>
                 )}
+
+                {/* صورة اختيارية لكل فقرة */}
+                <div className={classes.form_group}>
+                  <label htmlFor={`blockImage-${index}`}>صورة الفقرة (اختياري)</label>
+                  <input
+                    type="file"
+                    id={`blockImage-${index}`}
+                    accept="image/*"
+                    disabled={isSubmitting}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file && file.type.match(/image\/(jpeg|jpg|png)/)) {
+                        handleContentBlockImageChange(index, file);
+                      } else {
+                        Swal.fire("خطأ!", "الرجاء اختيار صورة بصيغة JPG أو PNG", "error");
+                      }
+                    }}
+                  />
+                  {block.imagePreview && (
+                    <div className={classes.image_preview}>
+                      <img src={block.imagePreview} alt={`معاينة الفقرة ${index}`} />
+                    </div>
+                  )}
+                </div>
+
                 {articleData.contentBlocks.length > 1 && (
                   <button
                     type="button"
@@ -337,7 +352,7 @@ const AddArticle = () => {
                     className={classes.remove_button}
                     disabled={isSubmitting}
                   >
-                    حذف
+                    حذف الفقرة
                   </button>
                 )}
               </div>
@@ -352,35 +367,7 @@ const AddArticle = () => {
             </button>
           </div>
 
-          {/* Publish Date */}
-          <div className={classes.form_group}>
-            <label htmlFor="publishDate">تاريخ النشر *</label>
-            <input
-              type="datetime-local"
-              id="publishDate"
-              name="publishDate"
-              value={articleData.publishDate}
-              onChange={handleChange}
-              disabled={isSubmitting}
-            />
-          </div>
-
-          {/* Read Time */}
-          <div className={classes.form_group}>
-            <label htmlFor="readTime">مدة القراءة (دقائق) *</label>
-            <input
-              type="number"
-              id="readTime"
-              name="readTime"
-              value={articleData.readTime}
-              onChange={handleChange}
-              min="1"
-              max="120"
-              disabled={isSubmitting}
-            />
-          </div>
-
-          {/* Submit Button */}
+          {/* زر الإرسال */}
           <div className={classes.form_actions}>
             <button
               type="submit"

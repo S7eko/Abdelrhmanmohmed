@@ -11,79 +11,100 @@ const ChangePassword = () => {
     confirmPassword: "",
   });
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false); // حالة التحميل
+  const [errors, setErrors] = useState({
+    email: "",
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+    api: ""
+  });
+  const [loading, setLoading] = useState(false);
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case "email":
+        if (!value) return "Email is required";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Invalid email format";
+        return "";
+      case "oldPassword":
+        if (!value) return "Current password is required";
+        return "";
+      case "newPassword":
+        if (!value) return "New password is required";
+        if (value.length < 8) return "Password must be at least 8 characters";
+        if (value === formData.oldPassword) return "New password must be different";
+        return "";
+      case "confirmPassword":
+        if (!value) return "Please confirm your password";
+        if (value !== formData.newPassword) return "Passwords don't match";
+        return "";
+      default:
+        return "";
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: validateField(name, value), api: "" }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      email: validateField("email", formData.email),
+      oldPassword: validateField("oldPassword", formData.oldPassword),
+      newPassword: validateField("newPassword", formData.newPassword),
+      confirmPassword: validateField("confirmPassword", formData.confirmPassword),
+      api: ""
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
-    // التحقق من تطابق كلمة المرور الجديدة وتأكيدها
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError("New password and confirm password do not match.");
-      return;
-    }
-
-    // التحقق من أن جميع الحقول مملوءة
-    if (
-      !formData.email ||
-      !formData.oldPassword ||
-      !formData.newPassword ||
-      !formData.confirmPassword
-    ) {
-      setError("Please fill in all fields.");
-      return;
-    }
-
-    setLoading(true); // بدء التحميل
-    setError("");
-    setSuccess("");
-
+    setLoading(true);
     try {
-      const token = localStorage.getItem("token"); // استخراج الـ token من localStorage
-      if (!token) {
-        Swal.fire({
-          icon: "error",
-          title: "Unauthorized",
-          text: "Please login first 🔑",
-        });
-        return;
-      }
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Session expired. Please login again.");
 
-      // تحضير البيانات المرسلة (بدون confirmPassword)
-      const payload = {
-        email: formData.email,
-        oldPassword: formData.oldPassword,
-        newPassword: formData.newPassword,
-      };
+      const response = await fetch("https://skillbridge.runasp.net/api/Users/changePassword", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          oldPassword: formData.oldPassword,
+          newPassword: formData.newPassword,
+          confirmPassword: formData.confirmPassword
+        })
+      });
 
-      const response = await fetch(
-        "https://skillbridge.runasp.net/api/Users/changePassword",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // إضافة الـ token إلى الـ headers
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      const responseData = await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(responseData.message || "Failed to change password.");
+        // Handle different error response formats
+        const errorMsg = data?.errors?.ConfirmPassword?.[0] ||
+          data?.errors?.NewPassword?.[0] ||
+          data?.title ||
+          data?.message ||
+          "Failed to change password. Please try again.";
+        throw new Error(errorMsg);
       }
 
-      setSuccess("Password changed successfully!");
+      // Success case
+      Swal.fire({
+        icon: "success",
+        title: "Password Changed!",
+        text: "Your password has been updated successfully.",
+        timer: 3000,
+      });
+
+      // Reset form
       setFormData({
         email: "",
         oldPassword: "",
@@ -91,31 +112,43 @@ const ChangePassword = () => {
         confirmPassword: "",
       });
 
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Password changed successfully! ✅",
-      });
     } catch (error) {
-      console.error("Error:", error);
-      setError(error.message);
+      console.error("Password change error:", error);
+      setErrors(prev => ({ ...prev, api: error.message }));
 
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: error.message || "Failed to change password. ❌",
+        title: "Password Change Failed",
+        html: `
+          <div style="text-align:left">
+            <p>${error.message}</p>
+            <p style="margin-top:10px;font-size:0.9em">
+              <strong>Troubleshooting tips:</strong>
+              <ul style="padding-left:20px;margin-top:5px">
+                <li>Ensure your current password is correct</li>
+                <li>Check your new password meets requirements</li>
+                <li>Try again in a few minutes</li>
+              </ul>
+            </p>
+          </div>
+        `,
       });
     } finally {
-      setLoading(false); // إيقاف التحميل
+      setLoading(false);
     }
   };
 
   return (
     <div className={classes.container}>
       <h2>Change Password</h2>
-      {error && <p className={classes.error}>{error}</p>}
-      {success && <p className={classes.success}>{success}</p>}
-      <form onSubmit={handleSubmit}>
+
+      {errors.api && (
+        <div className={classes.api_error}>
+          <p>{errors.api}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} noValidate>
         <div className={classes.form_group}>
           <label htmlFor="email">Email:</label>
           <input
@@ -125,10 +158,14 @@ const ChangePassword = () => {
             value={formData.email}
             onChange={handleChange}
             required
+            autoComplete="email"
+            className={errors.email ? classes.error_input : ""}
           />
+          {errors.email && <span className={classes.error_message}>{errors.email}</span>}
         </div>
+
         <div className={classes.form_group}>
-          <label htmlFor="oldPassword">Old Password:</label>
+          <label htmlFor="oldPassword">Current Password:</label>
           <input
             type="password"
             id="oldPassword"
@@ -136,8 +173,12 @@ const ChangePassword = () => {
             value={formData.oldPassword}
             onChange={handleChange}
             required
+            autoComplete="current-password"
+            className={errors.oldPassword ? classes.error_input : ""}
           />
+          {errors.oldPassword && <span className={classes.error_message}>{errors.oldPassword}</span>}
         </div>
+
         <div className={classes.form_group}>
           <label htmlFor="newPassword">New Password:</label>
           <input
@@ -147,8 +188,17 @@ const ChangePassword = () => {
             value={formData.newPassword}
             onChange={handleChange}
             required
+            minLength="8"
+            autoComplete="new-password"
+            className={errors.newPassword ? classes.error_input : ""}
           />
+          {errors.newPassword ? (
+            <span className={classes.error_message}>{errors.newPassword}</span>
+          ) : (
+            <small className={classes.hint}>Minimum 8 characters</small>
+          )}
         </div>
+
         <div className={classes.form_group}>
           <label htmlFor="confirmPassword">Confirm New Password:</label>
           <input
@@ -158,14 +208,28 @@ const ChangePassword = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
+            minLength="8"
+            autoComplete="new-password"
+            className={errors.confirmPassword ? classes.error_input : ""}
           />
+          {errors.confirmPassword && (
+            <span className={classes.error_message}>{errors.confirmPassword}</span>
+          )}
         </div>
+
         <button
-          className={classes.button}
           type="submit"
-          disabled={loading} // تعطيل الزر أثناء التحميل
+          className={classes.button}
+          disabled={loading}
         >
-          {loading ? "Changing Password..." : "Change Password"}
+          {loading ? (
+            <span className={classes.button_loading}>
+              <span className={classes.spinner}></span>
+              Processing...
+            </span>
+          ) : (
+            "Change Password"
+          )}
         </button>
       </form>
     </div>
