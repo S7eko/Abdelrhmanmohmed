@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import classes from "../style/login.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,8 +27,8 @@ const Login = () => {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
-    setSuccess(""); // Clear previous success messages
+    setError("");
+    setSuccess("");
 
     if (!email || !password) {
       setError("Please enter both email and password.");
@@ -43,7 +44,7 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      const result = await response.json(); // Parse response even on error
+      const result = await response.json();
 
       if (!response.ok) {
         setError(result.message || "Login failed. Please try again.");
@@ -53,10 +54,10 @@ const Login = () => {
       setSuccess("Login successful. Welcome back!");
       console.log("Login successful:", result);
 
-      // هنا يمكنك تخزين التوكن وإعادة توجيه المستخدم
+      // Save token and redirect
       localStorage.setItem("token", result.token);
       setTimeout(() => {
-        window.location.href = "/"; // استبدلها بالمسار المناسب
+        window.location.href = "/";
       }, 2000);
     } catch (error) {
       console.error("Login error:", error);
@@ -97,7 +98,7 @@ const Login = () => {
           <section className={classes.login_body_right}>
             <div className={classes.login_body_right_text}>
               <h1>Login</h1>
-              <p>Prepare yourself for a future full of stars.</p>
+              <p>Prepare yourself for a future full of success.</p>
             </div>
             <form onSubmit={handleSubmit}>
               {/* Email Input */}

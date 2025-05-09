@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import classes from "../style/login.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -15,6 +17,8 @@ const InputField = ({ type, id, placeholder, value, onChange }) => {
 };
 
 const Register = () => {
+  const router = useRouter();
+
   // State for form fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,19 +37,18 @@ const Register = () => {
 
     // Validation
     if (!name || !email || !password || !role) {
-      setError("جميع الحقول مطلوبة");
+      setError("All fields are required.");
       return;
     }
 
     const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%&!*^])[A-Za-z\d@#$%&!*^]{8,}$/;
     if (!passwordRegex.test(password)) {
       setError(
-        "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل، وحرف خاص واحد (@, #, $, %, إلخ)، وأن تكون طولها 8 أحرف على الأقل."
+        "Password must include at least one uppercase letter, one special character (@, #, $, %, etc.), and be at least 8 characters long."
       );
       return;
     }
 
-    // Prepare data
     const userData = {
       email: email,
       password: password,
@@ -69,8 +72,8 @@ const Register = () => {
       try {
         result = JSON.parse(rawResponse);
       } catch (jsonError) {
-        console.error("خطأ في تحويل الرد إلى JSON:", jsonError);
-        setError("حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+        console.error("JSON parsing error:", jsonError);
+        setError("An unexpected error occurred. Please try again.");
         return;
       }
 
@@ -79,34 +82,38 @@ const Register = () => {
           const errorMessages = Object.values(result.errors).join(", ");
           setError(errorMessages);
         } else {
-          setError(result.message || "فشل التسجيل. يرجى المحاولة مرة أخرى.");
+          setError(result.message || "Registration failed. Please try again.");
         }
         return;
       }
 
-      console.log("تم التسجيل بنجاح:", result);
-      setSuccess("تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.");
-      // Reset form
+      console.log("Registration successful:", result);
+      setSuccess("Registration successful! Redirecting to login...");
+
+      // Clear form
       setName("");
       setEmail("");
       setPassword("");
       setRole("");
+
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        router.push("/course/login");
+      }, 2000);
     } catch (error) {
-      console.error("خطأ في التسجيل:", error);
-      setError("حدث خطأ. يرجى المحاولة مرة أخرى لاحقًا.");
+      console.error("Registration error:", error);
+      setError("An error occurred. Please try again later.");
     }
   };
 
-  const content = [
-    {
-      h3: "Homepage",
-      h1: "One Step Closer to Your Dream",
-      p: "A free E-Learning service ready to help you become an expert.",
-      button: "Register",
-      span: "Already have an account?",
-      a: "Log In",
-    },
-  ];
+  const content = {
+    h3: "Homepage",
+    h1: "One Step Closer to Your Dream",
+    p: "A free E-Learning service ready to help you become an expert.",
+    button: "Register",
+    span: "Already have an account?",
+    a: "Log In",
+  };
 
   return (
     <div className={classes.login}>
@@ -116,21 +123,21 @@ const Register = () => {
         <div className={classes.login_body}>
           <section className={classes.login_body_left}>
             <div className={classes.login_body_left_image}>
-              <h1>{content[0].h1}</h1>
-              <p>{content[0].p}</p>
+              <h1>{content.h1}</h1>
+              <p>{content.p}</p>
             </div>
           </section>
 
           <section className={classes.login_body_right}>
             <div className={classes.login_body_right_text}>
-              <h1>تسجيل</h1>
-              <p>استعد لمستقبل مليء بالنجوم.</p>
+              <h1>Register</h1>
+              <p>Get ready for a future full of achievements.</p>
             </div>
             <form onSubmit={handleSubmit}>
               <InputField
                 type="text"
                 id="name"
-                placeholder="الاسم"
+                placeholder="Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -138,7 +145,7 @@ const Register = () => {
               <InputField
                 type="email"
                 id="email"
-                placeholder="البريد الإلكتروني"
+                placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -146,7 +153,7 @@ const Register = () => {
               <InputField
                 type="password"
                 id="password"
-                placeholder="كلمة المرور"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -157,7 +164,7 @@ const Register = () => {
                   className={`${classes.role} ${role === "Student" ? classes.active : ""}`}
                   onClick={() => setRole("Student")}
                 >
-                  <label htmlFor="Student">طالب</label>
+                  <label htmlFor="Student">Student</label>
                   <input
                     type="radio"
                     name="role"
@@ -170,7 +177,7 @@ const Register = () => {
                   className={`${classes.role} ${role === "Instructor" ? classes.active : ""}`}
                   onClick={() => setRole("Instructor")}
                 >
-                  <label htmlFor="Instructor">مدرس</label>
+                  <label htmlFor="Instructor">Instructor</label>
                   <input
                     type="radio"
                     name="role"
@@ -183,7 +190,7 @@ const Register = () => {
                   className={`${classes.role} ${role === "Admin" ? classes.active : ""}`}
                   onClick={() => setRole("Admin")}
                 >
-                  <label htmlFor="Admin">مسؤول</label>
+                  <label htmlFor="Admin">Admin</label>
                   <input
                     type="radio"
                     name="role"
@@ -194,16 +201,15 @@ const Register = () => {
                 </div>
               </div>
 
-
               <div className={classes.form_group}>
-                <button type="submit">{content[0].button}</button>
+                <button type="submit">{content.button}</button>
               </div>
 
               {error && <p className={classes.error}>{error}</p>}
               {success && <p className={classes.success}>{success}</p>}
 
               <span>
-                {content[0].span} <Link href="/course/login">{content[0].a}</Link>
+                {content.span} <Link href="/course/login">{content.a}</Link>
               </span>
             </form>
           </section>

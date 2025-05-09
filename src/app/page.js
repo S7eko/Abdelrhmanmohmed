@@ -6,11 +6,9 @@ import Benefits from "./components/benefits";
 import AboutUs from "./components/aboutUs";
 import Recommendations from "./components/recommendations";
 import Question from "./components/question";
-import Login from "./components/login";
-import Register from "./components/register";
+
 import Blog from "./components/blog";
 
-import Chatbot from "./components/chatGpt";
 
 export default function Home() {
   return (
@@ -21,7 +19,6 @@ export default function Home() {
       <AboutUs />
       <Recommendations />
       <Question />
-      <Register />
       <Blog />
     </div>
   );
