@@ -1,195 +1,298 @@
+/* =============================
+   🚀 Legendary Chatbot Interface
+   ============================= */
+
+/* Floating Chat Icon - Holographic Effect */
 .chatIcon {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #007bff, #00c6ff);
-  padding: 16px;
+  bottom: 25px;
+  right: 25px;
+  /* margin-top: 50px; */
+  background: linear-gradient(135deg, #6e45e2, #88d3ce);
+  padding: 18px;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  z-index: 1001;
+  box-shadow: 
+    0 8px 25px rgba(110, 69, 226, 0.4),
+    0 0 0 8px rgba(110, 69, 226, 0.1),
+    0 0 0 16px rgba(110, 69, 226, 0.05);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1500;
+  animation: pulse 3s infinite;
 }
 
 .chatIcon:hover {
-  transform: scale(1.15);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+  transform: scale(1.2) rotate(15deg);
+  box-shadow: 
+    0 12px 30px rgba(110, 69, 226, 0.6),
+    0 0 0 12px rgba(110, 69, 226, 0.15),
+    0 0 0 24px rgba(110, 69, 226, 0.08);
 }
 
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Chatbot Container - Glass Morphism */
 .chatbotContainer {
   position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: min(95vw, 480px);
-  height: 520px;
-  border-radius: 20px;
-  backdrop-filter: blur(15px);
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  bottom: 20px;
+  right: 100px;
+  width: min(95vw, 500px);
+  height: 600px;
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.2),
+    inset 0 0 15px rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   z-index: 1000;
-  animation: slideUp 0.4s ease;
+  animation: 
+    slideUp 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    glow 8s infinite alternate;
+  transform-origin: bottom right;
+  margin-top: 50px;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(60px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+@keyframes glow {
+  0% { box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.1); }
+  100% { box-shadow: 0 15px 45px rgba(110, 69, 226, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.2); }
 }
 
-@media (max-width: 480px) {
-  .chatbotContainer {
-    width: 95%;
-    height: 470px;
-    right: 10px;
-    bottom: 80px;
-  }
-}
-
-.closeButton {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  font-size: 24px;
-  color: #fff;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1;
-  transition: transform 0.2s ease;
-}
-
-.closeButton:hover {
-  transform: scale(1.2);
-}
-
+/* Title Bar - Futuristic Gradient */
 .title {
-  background: linear-gradient(to right, #007bff, #00c6ff);
+  background: linear-gradient(90deg, #6e45e2 0%, #88d3ce 100%);
   color: #fff;
-  padding: 16px;
+  padding: 18px;
   text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
+.title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.8) 50%, 
+    rgba(255,255,255,0) 100%);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Chat Window - Floating Effect */
 .chatWindow {
   flex: 1;
-  padding: 14px;
+  padding: 16px;
   overflow-y: auto;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
   scrollbar-width: thin;
-  scrollbar-color: #007bff transparent;
+  scrollbar-color: #6e45e2 transparent;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(110, 69, 226, 0.05) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(136, 211, 206, 0.05) 0%, transparent 20%);
 }
 
-.chatWindow::-webkit-scrollbar {
-  width: 6px;
-}
-
-.chatWindow::-webkit-scrollbar-thumb {
-  background-color: #007bff;
-  border-radius: 12px;
-}
-
+/* Message Bubbles - 3D Effect */
 .message {
   position: relative;
   max-width: 85%;
-  padding: 14px 18px;
-  border-radius: 20px;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.8;
+  padding: 16px 20px;
+  border-radius: 22px;
+  font-size: 16px;
+  line-height: 1.6;
   transition: all 0.3s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform-style: preserve-3d;
+  transform: perspective(500px);
+  will-change: transform;
 }
 
+/* User Message - Floating Island Effect */
 .userMessage {
   align-self: flex-end;
-  background: linear-gradient(135deg, #007bff, #00c6ff);
+  background: linear-gradient(135deg, #6e45e2, #88d3ce);
   color: white;
-  border-bottom-right-radius: 6px;
-  border-top-left-radius: 6px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 8px;
+  animation: floatUp 0.4s ease forwards;
 }
 
-.userMessage::after {
+.userMessage::before {
   content: '';
   position: absolute;
-  right: -8px;
-  top: 12px;
-  border-left: 8px solid #00c6ff;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
+  bottom: -10px;
+  right: 0;
+  width: 100%;
+  height: 20px;
+  background: radial-gradient(ellipse at bottom, rgba(110, 69, 226, 0.4) 0%, transparent 70%);
+  filter: blur(5px);
+  z-index: -1;
 }
 
+/* Bot Message - Holographic Card */
 .botMessage {
   align-self: flex-start;
-  background-color: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
   color: #333;
-  border-bottom-left-radius: 6px;
-  border-top-right-radius: 6px;
+  border-bottom-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  animation: floatUp 0.4s ease forwards;
+  backdrop-filter: blur(5px);
 }
 
-.botMessage::after {
+.botMessage::before {
   content: '';
   position: absolute;
-  left: -8px;
-  top: 12px;
-  border-right: 8px solid #ffffff;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  filter: blur(5px);
+  z-index: -1;
 }
 
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) perspective(500px) rotateX(20deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) perspective(500px) rotateX(0);
+  }
+}
+
+/* Input Area - Futuristic Console */
 .inputContainer {
   display: flex;
-  padding: 12px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-top: 1px solid #ddd;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  backdrop-filter: blur(10px);
 }
 
 .inputContainer input {
   flex: 1;
-  padding: 12px 16px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
-  background-color: #fff;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 16px;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 
+    0 2px 10px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
 }
 
 .inputContainer input:focus {
-  border-color: #00c6ff;
   outline: none;
+  box-shadow: 
+    0 0 0 2px rgba(110, 69, 226, 0.3),
+    0 4px 15px rgba(110, 69, 226, 0.2);
 }
 
+/* Send Button - Cyberpunk Style */
 .inputContainer button {
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #007bff, #00c6ff);
-  color: #fff;
-  font-weight: bold;
+  padding: 14px 22px;
+  background: linear-gradient(135deg, #6e45e2, #88d3ce);
+  color: white;
+  font-weight: 600;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(110, 69, 226, 0.4);
+}
+
+.inputContainer button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
 }
 
 .inputContainer button:hover {
-  transform: scale(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(110, 69, 226, 0.6);
 }
 
-.inputContainer button:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
+.inputContainer button:hover::before {
+  left: 100%;
+}
+
+/* Typing Indicator - Animated */
+.typingIndicator {
+  display: flex;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  align-self: flex-start;
+  gap: 8px;
+}
+
+.typingDot {
+  width: 10px;
+  height: 10px;
+  background: #6e45e2;
+  border-radius: 50%;
+  animation: typingAnimation 1.4s infinite ease-in-out;
+}
+
+.typingDot:nth-child(1) { animation-delay: 0s; }
+.typingDot:nth-child(2) { animation-delay: 0.2s; }
+.typingDot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingAnimation {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-8px); }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .chatbotContainer {
+    width: 95%;
+    height: 70vh;
+    right: 2.5%;
+    bottom: 90px;
+  }
+  
+  .chatIcon {
+    bottom: 20px;
+    right: 20px;
+    padding: 16px;
+  }
 }

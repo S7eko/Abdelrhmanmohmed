@@ -79,9 +79,9 @@ const Chatbot = () => {
             onClick={() => setShowChatbot(false)}
           >
             &times;
+          <h2 className={styles.title}>Assistant Bot</h2>
           </button>
 
-          <h2 className={styles.title}>Assistant Bot</h2>
 
           <div className={styles.chatWindow}>
             {messages.map((msg, index) => (
