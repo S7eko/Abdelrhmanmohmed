@@ -86,8 +86,7 @@ const Navbar = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-
-      setNotifications((prev) => [...new Set([...prev, ...data])]);
+      setNotifications(data); // استبدال الإشعارات القديمة بالجديدة
     } catch (err) {
       console.error("Error fetching notifications:", err);
     }
@@ -102,7 +101,6 @@ const Navbar = () => {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setNotifications([]);
     } catch (err) {
       console.error("Error marking notifications as read:", err);
@@ -113,11 +111,10 @@ const Navbar = () => {
     await markNotificationsAsRead();
   }, [markNotificationsAsRead]);
 
+  // جلب الإشعارات عند تحميل المستخدم لأول مرة
   useEffect(() => {
     if (user) {
       fetchNotifications();
-      const interval = setInterval(fetchNotifications, 30000);
-      return () => clearInterval(interval);
     }
   }, [user, fetchNotifications]);
 
@@ -129,8 +126,10 @@ const Navbar = () => {
   const toggleProfile = useCallback(() => setShowProfile((prev) => !prev), []);
 
   const toggleNotifications = useCallback(() => {
+    // جلب الإشعارات عند النقر على أيقونة الجرس
+    fetchNotifications();
     setShowNotifications((prev) => !prev);
-  }, []);
+  }, [fetchNotifications]);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
@@ -157,9 +156,8 @@ const Navbar = () => {
     <div className={styles.mar}>
       <div className={styles.nav_container}>
         <div className={styles.nav_left}>
-          {/* إضافة اللوجو هنا */}
           <Image
-            src="/logo.svg" // تأكد من وجود الملف في مجلد public
+            src="/logo.svg"
             alt="SkillVerse Logo"
             width={40}
             height={40}
@@ -185,15 +183,13 @@ const Navbar = () => {
                 <Link href="/course/blog">BLOG</Link>
               </li>
 
-              {/* إظهار Admin فقط للمسؤولين */}
               {user && user.role === 'Admin' && (
                 <li>
                   <Link href="/course/Admin">ADMIN</Link>
                 </li>
               )}
 
-              {/* إظهار Dashboard للمدربين والمسؤولين */}
-              {(user && (user.role === 'Instructor' )) && (
+              {(user && (user.role === 'Instructor')) && (
                 <li>
                   <Link href="/course/dashboard">DASHBOARD</Link>
                 </li>
